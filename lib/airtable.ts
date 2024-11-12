@@ -2,25 +2,71 @@ import Airtable from "airtable";
 
 const base = new Airtable({apiKey: process.env.AIRTABLE_KEY}).base('appazEhgj3jhg8CxF');
 
-
-export const getAllTasks = async () => {
-  const tasks = await base('Tasks').select({
-    view: "Grid view",
-    filterByFormula: `{Status} = "Not Started"`,
-  }).all();
-
-  return tasks.map(task => {
-    return {
-      id: task.getId(),
-      title: task.get('Title'),
-      status: task.get('Status'),
-      dueDate: task.get('Due Date'),
-      priority: task.get('Priority'),
-      description: task.get('Description'),
-    }
-  })
+type BaseSelectOption = {
+    maxRecords: number,
+    view: string,
+    filterByFormula?: string
 }
 
+type GetAllTasksParams ={
+    filterByFormula?: string
+}
 
-//TODO: add tasks
+type Task = {
+    id: string;
+    status: "Not ready" | "In progress" | "Completed";  // adjust as needed
+    priority: "Low" | "Medium" | "High" | "Very important";  // adjust as needed
+    created_at: string;
+    TaskDescription: string;
+    Assignments: string[];
+    title: string;
+    description: string;
+    due_date: string;  
+    estimated_hours: number;
+};
+
+export const getAllTasks = async ({ filterByFormula = undefined }: GetAllTasksParams): Promise<Task[]> => {
+    const baseSelectOptions: BaseSelectOption = {
+        maxRecords: 50,
+        view: "Grid view",
+    };
+
+    if (filterByFormula) {
+        baseSelectOptions.filterByFormula = filterByFormula;
+    }
+
+    const tasks: Task[] = [];
+
+    return new Promise((resolve, reject) => {
+        base('Tasks')
+            .select(baseSelectOptions)
+            .eachPage(
+                function page(records, fetchNextPage) {
+                    // Process each page of records.
+                    records.forEach((record) => {
+                        const taskRecord = {
+                            id: record.getId(),
+                            ...record.fields,
+                        };
+
+                        tasks.push(taskRecord as Task);
+                    });
+
+                    // Fetch the next page of records.
+                    fetchNextPage();
+                },
+                function done(err) {
+                    if (err) {
+                        console.error(err);
+                        reject(err);
+                    } else {
+                        // Resolve the promise with the fully populated array.
+                        resolve(tasks);
+                    }
+                }
+            );
+    });
+};
+
+
 
