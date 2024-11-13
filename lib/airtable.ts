@@ -57,7 +57,7 @@ export const getAllTasks = async ({ filterByFormula = undefined }: GetAllTasksPa
                 },
                 function done(err) {
                     if (err) {
-                        console.error(err);
+                        console.error("Error fetching tasks:", err);
                         reject(err);
                     } else {
                         // Resolve the promise with the fully populated array.
