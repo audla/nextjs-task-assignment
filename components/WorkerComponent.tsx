@@ -9,37 +9,39 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
+import { useQuery } from '@tanstack/react-query';
+
+
+
+const fetchAssignments = async (assignmentIds: string[]) => {
+  try {
+    const response = await fetch('/api/assignments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ assignmentIds }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch assignments');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching assignments:', error);
+  }
+};
 
 export default function WorkerComponent({ workers }: { workers: Worker[] }) {
   const [activeWorker, setActiveWorker] = useState<Worker | null>(workers[0] || null);
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
 
-  useEffect(() => {
-    if (activeWorker) {
-      fetchAssignments(activeWorker.Assignments);
-    }
-  }, [activeWorker]);
-
-  const fetchAssignments = async (assignmentIds: string[]) => {
-    try {
-      const response = await fetch('/api/assignments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ assignmentIds }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch assignments');
-      }
-
-      const data = await response.json();
-      setAssignments(data);
-    } catch (error) {
-      console.error('Error fetching assignments:', error);
-    }
-  };
+  const { isLoading: assignmentsPending, error: assignmentsError, data: assignmentsData } = useQuery({
+    queryKey: ['assignments', activeWorker?.Assignments || []],
+    queryFn: () => fetchAssignments(activeWorker?.Assignments || []),
+    enabled: !!activeWorker, // Only run the query if a worker is selected
+  });
 
   return !workers.length ? (
     <div>No workers found</div>
@@ -49,14 +51,19 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
       <h2>Worker: {activeWorker.worker_id}</h2>
       <h3>Hourly rate: ${activeWorker.hourly_rate}</h3>
       <h3>Assignments for this worker:</h3>
-      <ul>
-        {assignments.map((assignment) => (
-          <li key={assignment.id}>
-            {assignment.Titre}
-            {assignment.assignment_id}: {assignment.assignment_status}
-          </li>
-        ))}
-      </ul>
+      {assignmentsPending ? (
+        <p>Loading assignments...</p>
+      ) : assignmentsError ? (
+        <p>Error fetching assignments: {assignmentsError.message}</p>
+      ) : (
+        <ul>
+          {assignmentsData?.map((assignment: Assignment) => (
+            <li key={assignment.id}>
+              {assignment.assignment_id}: {assignment.assignment_status}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   ) : (
     <>
