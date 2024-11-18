@@ -93,6 +93,7 @@ type Task = {
     estimated_hours: number;
 };
 
+// TODO: utiliser ceci pour l'api /api/tasks
 export const getAllTasks = async ({ filterByFormula = undefined }: GetAllTasksParams): Promise<Task[]> => {
     const baseSelectOptions: BaseSelectOption = {
         maxRecords: 50,
@@ -140,9 +141,10 @@ type GetAllAssignmentsParams ={
     filterByFormula?: string
 }
 
-type Assignment = {
+export type Assignment = {
     id: string;
     assignment_id: string;
+    Titre:string;
     assignment_status: "TODO" | "DONE" ;
     Workers: string[];
     Tasks: string[];
