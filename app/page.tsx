@@ -1,112 +1,62 @@
-import { getAllTasks } from "@/lib/airtable";
-import Image from "next/image";
+import { getAllTasks, getAllWorkers, getAllAssignments } from "@/lib/airtable";
+import React from "react";
 export default async function Home() {
 
 
 
   const tasks = await getAllTasks({  });
 
-  console.log(`tasks`, tasks.length);
+  const workers = await getAllWorkers({  });
 
+  const assignments = await getAllAssignments({});
+
+  console.log(`tasks`, tasks.length);
+  console.log(`workers`, workers.length);
+  console.log(`assignments`, assignments.length);
 
 
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-          <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-            {tasks.map(
-              (task) => {
+    <div className="bg-gray-900 grid grid-rows-[20px_1fr_20px] items-start min-h-screen p-8 pb-20 pt-50 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <div className="bg-white w-[40%] h-[90vh] mx-auto p-4 flex flex-col justify-start items-start rounded-md shadow-xl">
+      <main className="flex flex-col gap-8 row-start-2 items-start sm:items-start">
+         <h1 className= "text-red-700 font-[family-name:var(--font-geist-sans)] font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-primary justify-items-start">
+          AUDLA
+         </h1>
+           <h1 className= "text-black font-[family-name:var(--font-geist-sans)] font-bold">
+            Workers
+           </h1>
+            <div className="text-black list-inside text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)] font-bold">
+             {workers.map(
+              (worker) => {
                 
                 return (
-                <li key={task.id} className="mb-2">
-                  {task.title} : (Duration={task.estimated_hours/60/60} hours)
+                <h2 key={worker.id} className="mb-2">
+                  - {worker.worker_id} : {worker.hourly_rate} $
+                </h2>
+              )}
+            )}
+            </div>
+          <h1 className= "text-black font-[family-name:var(--font-geist-sans)] font-bold">
+            Assignments
+          </h1>
+          <ul className="text-black list-inside text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)] font-bold">
+            {assignments.map(
+              (assignment) => {
+                
+                return (
+                <li key={assignment.id } className="mb-2">
+                  - {assignment.assignment_id}. {assignment.Tasks}
                 </li>
               )}
             )}
-          </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+          </ul>
+          
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        
       </footer>
+      </div>
     </div>
   );
 }
