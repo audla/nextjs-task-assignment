@@ -12,7 +12,7 @@ type GetAllWorkersParams ={
     filterByFormula?: string
 }
 
-type Worker = {
+export type Worker = {
     worker_id: string;
     id: string;
     first_name: string;  // adjust as needed
@@ -23,9 +23,17 @@ type Worker = {
     job_title: "Programmer" | "Software Engineer" | "Frontend Developer" | "Backend Developer" | "Full Stack Developer" | "Mobile App Developer" | "DevOps Engineer" | "Cloud Architect" | "Systems Engineer" | "Automation Engineer" | "IT Support Specialist" | "Data Analyst" ;
     department: "Software Development" | "Product Management" | "Data and Analytics" | "Cloud and Infrastructure" | "Cybersecurity" | "Quality Assurance and Testing";  
     hourly_rate: number;
+    Assignments: string[];
 };
 
-export const getAllWorkers = async ({ filterByFormula = undefined }: GetAllTasksParams): Promise<Worker[]> => {
+export const getAllWorkers = async ({ filterByFormula = undefined }: GetAllWorkersParams): Promise<Worker[]> => {
+
+
+    // set a 10second delay to simulate a real-world scenario
+    setTimeout(() => {
+        console.log(`Workers fetched`);
+    }, 10000);
+
     const baseSelectOptions: BaseSelectOption = {
         maxRecords: 50,
         view: "Grid view",
