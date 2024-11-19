@@ -63,8 +63,11 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
             <li>
             <Link href={`/${assignment.id}`} key={assignment.id}>
               {assignment.assignment_id}: {assignment.Titre}: {assignment.assignment_status}
-             </Link> 
-             <p>delete</p>
+             </Link><br />
+            
+             <button className={buttonVariants({ variant: 'destructive' })}>
+               Delete
+             </button>
             </li>
           ))}
         </ul>
