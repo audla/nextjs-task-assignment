@@ -60,10 +60,12 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
       ) : (
         <ul>
           {assignmentsData?.map((assignment: Assignment) => (
+            <li>
             <Link href={`/${assignment.id}`} key={assignment.id}>
               {assignment.assignment_id}: {assignment.Titre}: {assignment.assignment_status}
-              <p>delete</p>
-            </Link>
+             </Link> 
+             <p>delete</p>
+            </li>
           ))}
         </ul>
       )}
