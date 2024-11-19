@@ -10,6 +10,8 @@ import {
   SelectValue,
 } from './ui/select';
 import { useQuery } from '@tanstack/react-query';
+import { buttonVariants } from '@/components/ui/button'
+import Link from 'next/link';
 
 
 
@@ -58,9 +60,10 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
       ) : (
         <ul>
           {assignmentsData?.map((assignment: Assignment) => (
-            <li key={assignment.id}>
-              {assignment.assignment_id}: {assignment.assignment_status}
-            </li>
+            <Link href={`/${assignment.id}`} key={assignment.id}>
+              {assignment.assignment_id}: {assignment.Titre}: {assignment.assignment_status}
+              <p>delete</p>
+            </Link>
           ))}
         </ul>
       )}
