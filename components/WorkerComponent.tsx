@@ -12,8 +12,18 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { buttonVariants } from '@/components/ui/button'
 import Link from 'next/link';
-
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
 
 const fetchAssignments = async (assignmentIds: string[]) => {
   try {
@@ -45,6 +55,11 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
     enabled: !!activeWorker, // Only run the query if a worker is selected
   });
 
+  const handleDelete = (assignmentId: string) => {
+    console.log(`Deleting assignment with ID: ${assignmentId}`);
+    // Implement your delete logic here
+  };
+
   return !workers.length ? (
     <div>No workers found</div>
   ) : activeWorker ? (
@@ -60,14 +75,32 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
       ) : (
         <ul>
           {assignmentsData?.map((assignment: Assignment) => (
-            <li>
-            <Link href={`/${assignment.id}`} key={assignment.id}>
-              {assignment.assignment_id}: {assignment.Titre}: {assignment.assignment_status}
-             </Link><br />
-            
-             <button className={buttonVariants({ variant: 'destructive' })}>
-               Delete
-             </button>
+            <li key={assignment.id}>
+              <Link href={`/${assignment.id}`}>
+                {assignment.assignment_id}: {assignment.Titre}: {assignment.assignment_status}
+              </Link><br />
+              
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button className={buttonVariants({ variant: 'destructive' })}>
+                    Delete
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete the assignment.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleDelete(assignment.id)}>
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </li>
           ))}
         </ul>
