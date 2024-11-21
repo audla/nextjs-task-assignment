@@ -86,7 +86,7 @@ type Task = {
     priority: "Low" | "Medium" | "High" | "Very important";  // adjust as needed
     created_at: string;
     TaskDescription: string;
-    Assignments: string[];
+    AssignmentID: string[];
     title: string;
     description: string;
     due_date: string;  
