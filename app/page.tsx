@@ -26,7 +26,7 @@ export default async function Home() {
          <h1 className= "text-red-700 font-[family-name:var(--font-geist-sans)] font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-primary justify-items-start">
           AUDLA
          </h1>
-           <h2 className= "text-black font-[family-name:var(--font-geist-sans)] font-bold">
+           <h2 className= "text-black font-[family-name:var(--font-geist-sans)] font-bold text-2xl">
             Workers
            </h2>
            <Suspense fallback={<div>Loading...</div>}>
