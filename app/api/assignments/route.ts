@@ -23,6 +23,7 @@ export async function POST(req: Request) {
     console.error('Error fetching assignments:', error);
     return NextResponse.json({ error: 'Failed to fetch assignments',
         errorDetails: error.message
-     }, { status: 500 });
+     }, { status: 500 }
+    );
   }
 }
