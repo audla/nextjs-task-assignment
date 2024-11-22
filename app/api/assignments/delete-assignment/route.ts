@@ -23,17 +23,18 @@ export async function DELETE(request: NextRequest) {
     console.log('Airtable base initialized');
 
     // Fetch tasks associated with the assignment
-    const tasksToDelete: string[] = [];
+   
     console.log('Fetching tasks associated with the assignment...');
 
-    await new Promise<void>((resolve, reject) => {
+    const tasksToDelete = new Promise((resolve, reject) => {
+     const _tasksToDelete = []
       base('Tasks')
         .select({
           filterByFormula: `{assignmentId} = '${assignmentId}'`, // Assuming Tasks table has "AssignmentId" field
         })
         .eachPage(
           (records, fetchNextPage) => {
-            tasksToDelete.push(...records.map((record) => record.id)); // Add task IDs
+            _tasksToDelete.push(...records.map((record) => record.id)); // Add task IDs
             fetchNextPage();
           },
           (err) => {
@@ -41,7 +42,7 @@ export async function DELETE(request: NextRequest) {
               console.error('Error fetching tasks from Airtable:', err);
               reject(err); // Reject the promise on error
             } else {
-              resolve(); // Resolve the promise after all pages are fetched
+              resolve(_tasksToDelete); // Resolve the promise after all pages are fetched
             }
           }
         );
