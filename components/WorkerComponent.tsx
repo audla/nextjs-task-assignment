@@ -1,7 +1,7 @@
 'use client';
 
 import { Assignment, Worker } from '@/lib/airtable';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Select,
   SelectContent,

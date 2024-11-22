@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getAllAssignments } from '@/lib/airtable';
+import { getErrorMessage } from '@/lib/utils';
 
 export async function POST(req: Request) {
   try {
@@ -19,10 +20,10 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(assignments);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching assignments:', error);
     return NextResponse.json({ error: 'Failed to fetch assignments',
-        errorDetails: error.message
+        errorDetails: getErrorMessage(error)
      }, { status: 500 }
     );
   }

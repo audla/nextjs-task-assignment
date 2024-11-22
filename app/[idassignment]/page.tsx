@@ -1,4 +1,3 @@
-import StyledLink from "@/components/StyledLink"
 
 export default async function AssignmentPage({
     params,
