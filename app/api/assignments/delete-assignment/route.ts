@@ -29,7 +29,7 @@ export async function DELETE(request: NextRequest) {
     await new Promise<void>((resolve, reject) => {
       base('Tasks')
         .select({
-          filterByFormula: `{AssignmentId} = '${assignmentId}'`, // Assuming Tasks table has "AssignmentId" field
+          filterByFormula: `{assignmentId} = '${assignmentId}'`, // Assuming Tasks table has "AssignmentId" field
         })
         .eachPage(
           (records, fetchNextPage) => {
