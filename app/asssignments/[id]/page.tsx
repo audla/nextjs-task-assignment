@@ -1,4 +1,3 @@
-import { PageProps } from '@/.next/types/app/page';
 import { getErrorMessage } from '@/lib/utils';
 import { Metadata } from 'next';
 
@@ -14,7 +13,7 @@ async function fetchAssignment(id: string) {
   return res.json();
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const _params = await params;
   try {
     const assignment = await fetchAssignment(_params.id);
@@ -24,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function AssignmentPage({ params }: PageProps) {
+export default async function AssignmentPage({ params }: { params: { id: string } }) {
 
   const _params = await params;
   try {

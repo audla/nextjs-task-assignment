@@ -1,6 +1,6 @@
 import Airtable from "airtable";
 
-const base = new Airtable({apiKey: process.env.AIRTABLE_KEY}).base('appazEhgj3jhg8CxF');
+export const base = new Airtable({apiKey: process.env.AIRTABLE_KEY}).base('appazEhgj3jhg8CxF');
 
 type BaseSelectOption = {
     maxRecords: number,
@@ -80,7 +80,7 @@ type GetAllTasksParams ={
     filterByFormula?: string
 }
 
-type Task = {
+export type Task = {
     id: string;
     status: "Not ready" | "In progress" | "Completed";  // adjust as needed
     priority: "Low" | "Medium" | "High" | "Very important";  // adjust as needed
@@ -136,6 +136,27 @@ export const getAllTasks = async ({ filterByFormula = undefined }: GetAllTasksPa
             );
     });
 };
+
+
+export const deleteTasks = async (taskIds: string[]) => {
+
+    // Delete tasks
+    if (taskIds.length > 0) {
+        console.log(`Deleting ${taskIds.length} tasks...`);
+        return await new Promise<boolean>((resolve, reject) => {
+            base('Tasks').destroy(taskIds, (err) => {
+                if (err) {
+                    console.error('Error deleting tasks:', err);
+                    reject(false);
+                } else {
+                    console.log('Successfully deleted tasks');
+                    resolve(true);
+                }
+            });
+        });
+    }
+    return false;
+}
 
 type GetAllAssignmentsParams ={
     filterByFormula?: string
@@ -195,5 +216,32 @@ export const getAllAssignments = async ({ filterByFormula = undefined }: GetAllA
             );
     });
 };
+
+
+export const getAssignmentById = async (id: string): Promise<Assignment> => {
+    return new Promise((res, rej) =>
+        base('Assignments').find(id, function(err, record) {
+            if (err || !record ) { console.error(err); rej(err); }
+            else{
+                const assignmentRecordFields= {id:record?.id, ...record.fields} as unknown as Assignment
+                res(assignmentRecordFields);
+            }
+        })
+    )
+}
+
+export const deleteAssignment = async (id: string): Promise<Assignment | string> => {
+    return new Promise((res, rej) =>
+        base('Assignments').destroy(id, function(err, deletedRecord) {
+            if (err || !deletedRecord) { console.error(err); rej(err.message as string); }
+            else{
+                res({
+                    id: deletedRecord?.id,
+                    ...deletedRecord.fields
+                } as unknown as Assignment);
+            }
+        })
+    )
+}
 
 

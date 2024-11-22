@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Airtable from 'airtable';
+import { FieldSet, Records } from 'airtable';
+
+// Task type to explicitly define the structure
+interface Task {
+  id: string;
+  fields: {
+    assignmentId: string;
+    [key: string]: any;
+  };
+}
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -12,7 +22,7 @@ export async function DELETE(request: NextRequest) {
     const { assignmentId } = body;
     console.log('Parsed assignmentId:', assignmentId);
 
-    // Validate the input
+    // Validate the inputcxcxc
     if (!assignmentId) {
       console.log('No assignment ID provided in the request');
       return NextResponse.json({ error: 'Assignment ID is required' }, { status: 400 });
@@ -23,32 +33,47 @@ export async function DELETE(request: NextRequest) {
     console.log('Airtable base initialized');
 
     // Fetch tasks associated with the assignment
-   
     console.log('Fetching tasks associated with the assignment...');
 
-    const tasksToDelete = new Promise((resolve, reject) => {
-     const _tasksToDelete = []
+    const tasksToDelete: string[] = await new Promise((resolve, reject) => {
+      const _tasksToDelete: string[] = [];
       base('Tasks')
         .select({
-          filterByFormula: `{assignmentId} = '${assignmentId}'`, // Assuming Tasks table has "AssignmentId" field
+          filterByFormula: `{assignmentId} = '${assignmentId}'`,
         })
         .eachPage(
-          (records, fetchNextPage) => {
-            _tasksToDelete.push(...records.map((record) => record.id)); // Add task IDs
+          (records: Records<FieldSet>, fetchNextPage) => {
+            _tasksToDelete.push(...records.map((record) => record.id));
             fetchNextPage();
           },
           (err) => {
             if (err) {
               console.error('Error fetching tasks from Airtable:', err);
-              reject(err); // Reject the promise on error
+              reject(err);
             } else {
-              resolve(_tasksToDelete); // Resolve the promise after all pages are fetched
+              resolve(_tasksToDelete);
             }
           }
         );
     });
 
     console.log(`Tasks to delete: ${tasksToDelete.length} found`);
+
+    // Delete tasks
+    if (tasksToDelete.length > 0) {
+      console.log(`Deleting ${tasksToDelete.length} tasks...`);
+      await new Promise<void>((resolve, reject) => {
+        base('Tasks').destroy(tasksToDelete, (err) => {
+          if (err) {
+            console.error('Error deleting tasks:', err);
+            reject(err);
+          } else {
+            console.log('Successfully deleted tasks');
+            resolve();
+          }
+        });
+      });
+    }
 
     // Delete the assignment
     console.log(`Deleting assignment with ID: ${assignmentId}`);
@@ -65,7 +90,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true, message: 'Tasks and assignment deleted successfully' }, { status: 200 });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error in DELETE request:', error);
     return NextResponse.json({ error: 'Failed to delete tasks or assignment' }, { status: 500 });
   }
