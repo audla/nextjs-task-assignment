@@ -82,7 +82,9 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
               
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button className={buttonVariants({ variant: 'destructive' })}>
+                  <Button 
+                  onClick={() => handleDelete(assignment.id)}
+                  className={buttonVariants({ variant: 'destructive' })}>
                     Delete
                   </Button>
                 </AlertDialogTrigger>
