@@ -2,7 +2,7 @@
 
 import { Assignment, Worker } from '@/lib/airtable';
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,41 +31,48 @@ const fetchAssignments = async (assignmentIds: string[]) => {
   return await response.json();
 };
 
+const deleteAssignment = async (assignmentId: string) => {
+  const response = await fetch(`/api/assignments/${assignmentId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to delete assignment');
+  }
+
+  return await response.json();
+};
+
 export default function WorkerComponent({ workers }: { workers: Worker[] }) {
   const [activeWorker, setActiveWorker] = useState<Worker | null>(workers[0] || null);
+  const queryClient = useQueryClient();
 
-  const { isLoading, error, data: assignmentsData, refetch } = useQuery({
+  const { isLoading, error, data: assignmentsData } = useQuery({
     queryKey: ['assignments', activeWorker?.Assignments || []],
     queryFn: () => fetchAssignments(activeWorker?.Assignments || []),
     enabled: !!activeWorker,
   });
 
-  const handleDelete = async (assignmentId: string) => {
-    try {
-      const response = await fetch(`/api/assignment/${assignmentId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error deleting assignment:', errorData);
-        alert(`Failed to delete assignment: ${errorData.error}`);
-        return;
-      }
-  
-      const data = await response.json();
-      console.log('Successfully deleted:', data);
+  const deleteMutation = useMutation({
+    mutationFn: deleteAssignment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assignments', activeWorker?.Assignments || []] });
       alert('Assignment and tasks deleted successfully');
-    } catch (error) {
-      console.error('Error sending DELETE request:', error);
-      alert('An unexpected error occurred.');
-    }
+    },
+    onError: (error: Error) => {
+      console.error('Error deleting assignment:', error);
+      alert(`Failed to delete assignment: ${error.message}`);
+    },
+  });
+
+  const handleDelete = (assignmentId: string) => {
+    deleteMutation.mutate(assignmentId);
   };
-  
 
   return (
     <div>
@@ -82,7 +89,7 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
               {isLoading ? (
                 <p>Loading assignments...</p>
               ) : error ? (
-                <p>Error fetching assignments: {error.message}</p>
+                <p>Error fetching assignments: {(error as Error).message}</p>
               ) : (
                 <ul>
                   {assignmentsData?.map((assignment: Assignment) => (
@@ -142,3 +149,4 @@ function WorkerSelect({
     </Select>
   );
 }
+
