@@ -19,43 +19,62 @@ export default async function AssignmentPage({ params }: { params: { id: string 
     const tasks = assignment.Tasks ? await Promise.all(assignment.Tasks.map(getTaskById)) : [];
 
     return (
-      <div className="bg-gray-900  items-start min-h-screen p-8 pb-20 pt-50 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <div className="bg-white min-h-[90vh] max-w-[975px] mx-auto p-4 flex flex-col justify-start items-start rounded-md shadow-xl">
-        <h1 className="text-red-500 text-4xl font-[family-name:var(--font-geist-sans)] font-bold">Assignment Details</h1>
-        <p>
-          <strong>ID:</strong> {assignment.id}
-        </p>
-        <p>
-          <strong>Title:</strong> {assignment.Titre}
-        </p>
-        <p>
-          <strong>Status:</strong> {assignment.assignment_status}
-        </p>
-        {tasks.length > 0 && (
-          <div>
-            <p>
-              <strong>Number of Tasks:</strong> {tasks.length}
-            </p>
-            <ul>
-              {tasks.map((task, index) => (
-                <li key={task.id}>
-                  <strong>Task {index +1}: </strong> {task.title}<br/>
-                  Status: {task.status}<br/>
-                  Description: {task.description}<br/>
-                  Priority: {task.priority}<br/>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+      <div className="bg-gray-900 min-h-screen p-12 pb-24 pt-50 sm:p-24 flex items-start">
+        <div className="bg-white min-h-[90vh] max-w-[1100px] w-full mx-auto p-6 rounded-md shadow-xl flex flex-col">
+          <h1 className="text-red-500 text-4xl font-bold mb-6">Assignment Details</h1>
+
+          <p className="mb-4">
+            <strong>ID:</strong> {assignment.id}
+          </p>
+          <p className="mb-4">
+            <strong>Title:</strong> {assignment.Titre}
+          </p>
+          <p className="mb-8">
+            <strong>Status:</strong>{' '}
+            <span
+              className={
+                assignment.assignment_status === 'TODO'
+                  ? 'text-red-500 font-bold text-2xl'
+                  : assignment.assignment_status === 'DONE'
+                  ? 'text-green-500 font-bold text-2xl'
+                  : 'text-gray-700'
+              }
+            >
+              {assignment.assignment_status}
+            </span>
+          </p>
+
+          {tasks.length > 0 && (
+            <div>
+              <p className="mb-6">
+                <strong>Number of Tasks:</strong> {tasks.length}
+              </p>
+              <ul className="list-disc list-inside space-y-4">
+                {tasks.map((task, index) => (
+                  <li key={task.id} className="mb-4">
+                    <p>
+                      <strong>Task {index + 1}:</strong> {task.title}
+                    </p>
+                    <p>Status: {task.status}</p>
+                    <p>Description: {task.description}</p>
+                    <p>Priority: {task.priority}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
     );
   } catch (error: unknown) {
     return (
-      <div>
-        <h1>Error</h1>
-        <p>Failed to load assignment: {getErrorMessage(error)}</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-md shadow-md max-w-md w-full text-center">
+          <h1 className="text-2xl font-bold text-red-500 mb-6">Error</h1>
+          <p className="text-gray-700">
+            Failed to load assignment: {getErrorMessage(error)}
+          </p>
+        </div>
       </div>
     );
   }
