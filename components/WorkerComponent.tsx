@@ -88,6 +88,7 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
                   {assignmentsData?.map((assignment: Assignment) => (
                     <li key={assignment.id}>
                       {assignment.assignment_id}: {assignment.Titre}: {assignment.assignment_status}
+                      <br />
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive">Delete</Button>
