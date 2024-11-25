@@ -21,7 +21,7 @@ export default async function Home() {
 
   return (
     <div className="bg-gray-900  items-start min-h-screen p-8 pb-20 pt-50 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <div className="bg-white min-h-[90vh] max-w-[975px] mx-auto p-4 flex flex-col justify-start items-start rounded-md shadow-xl">
+      <div className="bg-white min-h-[90vh] max-w-[975px] mx-auto p-4 flex flex-col justify-start items-start rounded-md shadow-xl print:hidden">
       <main className="flex flex-col gap-8 row-start-2 items-start sm:items-start">
          <h1 className= "text-red-700 font-[family-name:var(--font-geist-sans)] font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-primary justify-items-start">
           AUDLA
