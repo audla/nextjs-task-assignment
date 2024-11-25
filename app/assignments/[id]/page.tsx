@@ -63,7 +63,7 @@ export default async function AssignmentPage({ params }: { params: { id: string 
               <p className="mb-6">
                 <strong>Number of Tasks:</strong> {tasks.length}
               </p>
-              <ul className="list-disc list-inside space-y-4">
+              <ul>
                 {tasks.map((task, index) => (
                   <li key={task.id} className="mb-4">
                     <p>
