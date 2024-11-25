@@ -94,7 +94,7 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
                 <p>Error fetching assignments: {(error as Error).message}</p>
               ) : (
                 <ul>
-                  <AssignmentsList assignments={assignmentsData || []} />
+                  <AssignmentsList assignments={assignmentsData || []} onDelete={handleDelete} />
                   {assignmentsData?.map((assignment: Assignment) => (
                     <li key={assignment.id}>
                       {assignment.assignment_id}: {assignment.Titre}: {assignment.assignment_status}
