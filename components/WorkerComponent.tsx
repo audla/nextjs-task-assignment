@@ -32,8 +32,9 @@ const fetchAssignments = async (assignmentIds: string[]) => {
   return await response.json();
 };
 
-const deleteAssignment = async (assignmentId: string) => {
-  const response = await fetch(`/api/assignments/${assignmentId}`, {
+const deleteAssignmentAndTasks = async (assignmentId: string) => {
+  // Assuming that there's a method to delete tasks by assignmentId
+  const response = await fetch(`/api/assignments/${assignmentId}/delete`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -43,7 +44,7 @@ const deleteAssignment = async (assignmentId: string) => {
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.error || 'Failed to delete assignment');
+    throw new Error(errorData.error || 'Failed to delete assignment and tasks');
   }
 
   return await response.json();
@@ -60,7 +61,7 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteAssignment,
+    mutationFn: deleteAssignmentAndTasks,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['assignments', activeWorker?.Assignments || []] });
       alert('Assignment and tasks deleted successfully');
@@ -151,4 +152,3 @@ function WorkerSelect({
     </Select>
   );
 }
-

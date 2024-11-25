@@ -1,6 +1,19 @@
-import { Assignment, Worker } from '@/lib/airtable'
+import { Assignment } from '@/lib/airtable'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { EllipsisVerticalIcon } from 'lucide-react'
+import { EllipsisVerticalIcon, Trash2Icon } from 'lucide-react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 const statuses = {
   DONE: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -12,7 +25,7 @@ function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function AssignmentsList({assignments}: {assignments: Assignment[]}) {
+export default function AssignmentsList({assignments, onDelete}: {assignments: Assignment[], onDelete: (id: string) => void}) {
   return (
     <ul role="list" className="divide-y divide-gray-100">
       {assignments.map((assignment) => (
@@ -40,12 +53,34 @@ export default function AssignmentsList({assignments}: {assignments: Assignment[
             </div>
           </div>
           <div className="flex flex-none items-center gap-x-4 print:hidden">
-            <a
+            <Link
               href={`/assignments/${assignment.id}`}
               className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block"
             >
               View project<span className="sr-only">, {assignment.Titre}</span>
-            </a>
+            </Link>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" className="hidden sm:flex items-center">
+                  <Trash2Icon className="h-4 w-4 mr-1" />
+                  Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the assignment and its associated tasks.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => onDelete(assignment.id)}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             <Menu as="div" className="relative flex-none">
               <MenuButton className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
                 <span className="sr-only">Open options</span>
@@ -56,28 +91,45 @@ export default function AssignmentsList({assignments}: {assignments: Assignment[
                 className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
               >
                 <MenuItem>
-                  <a
+                  <Link
                     href="#"
                     className="block px-3 py-1 text-sm/6 text-gray-900 data-[focus]:bg-gray-50 data-[focus]:outline-none"
                   >
                     Edit<span className="sr-only">, {assignment.Titre}</span>
-                  </a>
+                  </Link>
                 </MenuItem>
                 <MenuItem>
-                  <a
+                  <Link
                     href="#"
                     className="block px-3 py-1 text-sm/6 text-gray-900 data-[focus]:bg-gray-50 data-[focus]:outline-none"
                   >
                     Move<span className="sr-only">, {assignment.Titre}</span>
-                  </a>
+                  </Link>
                 </MenuItem>
                 <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-3 py-1 text-sm/6 text-gray-900 data-[focus]:bg-gray-50 data-[focus]:outline-none"
-                  >
-                    Delete<span className="sr-only">, {assignment.Titre}</span>
-                  </a>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        className="block w-full text-left px-3 py-1 text-sm/6 text-red-600 data-[focus]:bg-gray-50 data-[focus]:outline-none"
+                      >
+                        Delete<span className="sr-only">, {assignment.Titre}</span>
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete the assignment and its associated tasks.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => onDelete(assignment.id)}>
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </MenuItem>
               </MenuItems>
             </Menu>
@@ -87,3 +139,4 @@ export default function AssignmentsList({assignments}: {assignments: Assignment[
     </ul>
   )
 }
+
