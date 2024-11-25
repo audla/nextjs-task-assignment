@@ -85,7 +85,6 @@ export type Task = {
     status: "Not ready" | "In progress" | "Completed";  // adjust as needed
     priority: "Low" | "Medium" | "High" | "Very important";  // adjust as needed
     created_at: string;
-    TaskDescription: string;
     AssignmentID: string[];
     title: string;
     description: string;

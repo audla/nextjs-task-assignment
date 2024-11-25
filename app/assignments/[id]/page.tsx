@@ -39,7 +39,9 @@ export default async function AssignmentPage({ params }: { params: { id: string 
               {tasks.map((task, index) => (
                 <li key={task.id}>
                   <strong>Task {index +1}: </strong> {task.title}<br/>
-                  <strong>Description:</strong> {task.TaskDescription}
+                  Status: {task.status}<br/>
+                  Description: {task.description}<br/>
+                  Priority: {task.priority}<br/>
                 </li>
               ))}
             </ul>
