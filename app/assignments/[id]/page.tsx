@@ -1,6 +1,7 @@
 import { getAssignmentById, getTaskById } from '@/lib/airtable';
 import { getErrorMessage } from '@/lib/utils';
 import { Metadata } from 'next';
+import Link from 'next/link';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   try {
@@ -20,7 +21,7 @@ export default async function AssignmentPage({ params }: { params: { id: string 
 
     return (
       <div className="bg-gray-900 min-h-screen p-12 pb-24 pt-50 sm:p-24 flex items-start">
-        <div className="bg-white min-h-[90vh] max-w-[1100px] w-full mx-auto p-6 rounded-md shadow-xl flex flex-col">
+        <div className="bg-white min-h-[90vh] max-w-[1100px] w-full mx-auto p-6 rounded-md shadow-xl flex flex-col relative">
           <h1 className="text-red-500 text-4xl font-bold mb-6">Assignment Details</h1>
 
           <p className="mb-4">
@@ -34,9 +35,9 @@ export default async function AssignmentPage({ params }: { params: { id: string 
             <span
               className={
                 assignment.assignment_status === 'TODO'
-                  ? 'text-red-500 font-bold text-2xl'
+                  ? 'text-red-500 font-bold'
                   : assignment.assignment_status === 'DONE'
-                  ? 'text-green-500 font-bold text-2xl'
+                  ? 'text-green-500 font-bold'
                   : 'text-gray-700'
               }
             >
@@ -63,17 +64,37 @@ export default async function AssignmentPage({ params }: { params: { id: string 
               </ul>
             </div>
           )}
+
+          {/* Home Button */}
+          <div className="mt-10 flex justify-end w-full">
+            <Link
+              href="http://localhost:3000"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold"
+            >
+              Home
+            </Link>
+          </div>
         </div>
       </div>
     );
   } catch (error: unknown) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-gray-100 min-h-screen flex items-center justify-center">
         <div className="bg-white p-8 rounded-md shadow-md max-w-md w-full text-center">
           <h1 className="text-2xl font-bold text-red-500 mb-6">Error</h1>
           <p className="text-gray-700">
             Failed to load assignment: {getErrorMessage(error)}
           </p>
+
+          {/* Home Button */}
+          <div className="mt-6">
+            <Link
+              href="http://localhost:3000"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold"
+            >
+              Home
+            </Link>
+          </div>
         </div>
       </div>
     );
