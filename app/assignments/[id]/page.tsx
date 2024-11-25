@@ -66,35 +66,31 @@ export default async function AssignmentPage({ params }: { params: { id: string 
           )}
 
           {/* Home Button */}
-          <div className="mt-10 flex justify-end w-full">
-            <Link
-              href="http://localhost:3000"
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold"
-            >
-              Home
-            </Link>
-          </div>
+          <Link
+            href="http://localhost:3000"
+            className="absolute bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold"
+          >
+            Home
+          </Link>
         </div>
       </div>
     );
   } catch (error: unknown) {
     return (
       <div className="bg-gray-100 min-h-screen flex items-center justify-center">
-        <div className="bg-white p-8 rounded-md shadow-md max-w-md w-full text-center">
+        <div className="bg-white p-8 rounded-md shadow-md max-w-md w-full text-center relative">
           <h1 className="text-2xl font-bold text-red-500 mb-6">Error</h1>
           <p className="text-gray-700">
             Failed to load assignment: {getErrorMessage(error)}
           </p>
 
           {/* Home Button */}
-          <div className="mt-6">
-            <Link
-              href="http://localhost:3000"
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold"
-            >
-              Home
-            </Link>
-          </div>
+          <Link
+            href="http://localhost:3000"
+            className="absolute bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold"
+          >
+            Home
+          </Link>
         </div>
       </div>
     );
