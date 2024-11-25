@@ -1,11 +1,10 @@
-import { getAssignmentById } from '@/lib/airtable';
+import { getAssignmentById, getTaskById } from '@/lib/airtable';
 import { getErrorMessage } from '@/lib/utils';
 import { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const _params = await params;
   try {
-    const assignment = await getAssignmentById(_params.id);
+    const assignment = await getAssignmentById(params.id);
     return { title: `Assignment: ${assignment.Titre}` };
   } catch {
     return { title: 'Assignment Not Found' };
@@ -13,10 +12,11 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 }
 
 export default async function AssignmentPage({ params }: { params: { id: string } }) {
-
-  const _params = await params;
   try {
-    const assignment = await getAssignmentById(_params.id);
+    const assignment = await getAssignmentById(params.id);
+
+    // Fetch tasks only if there are any associated with the assignment
+    const tasks = assignment.Tasks ? await Promise.all(assignment.Tasks.map(getTaskById)) : [];
 
     return (
       <div>
@@ -30,9 +30,21 @@ export default async function AssignmentPage({ params }: { params: { id: string 
         <p>
           <strong>Status:</strong> {assignment.assignment_status}
         </p>
-        {assignment.Tasks &&(<p>
-          <strong>Description:</strong> {assignment.Tasks.length} tasks
-        </p>)}
+        {tasks.length > 0 && (
+          <div>
+            <p>
+              <strong>Number of Tasks:</strong> {tasks.length}
+            </p>
+            <ul>
+              {tasks.map((task, index) => (
+                <li key={task.id}>
+                  <strong>Task {index +1}: </strong> {task.title}<br/>
+                  <strong>Description:</strong> {task.TaskDescription}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     );
   } catch (error: unknown) {

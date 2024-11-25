@@ -136,7 +136,17 @@ export const getAllTasks = async ({ filterByFormula = undefined }: GetAllTasksPa
             );
     });
 };
-
+export const getTaskById = async (id: string): Promise<Task> => {
+    return new Promise((res, rej) =>
+        base('Tasks').find(id, function(err, record) {
+            if (err || !record ) { console.error(err); rej(err); }
+            else{
+                const taskRecordFields= {id:record?.id, ...record.fields} as unknown as Task
+                res(taskRecordFields);
+            }
+        })
+    )
+}
 
 export const deleteTasks = async (taskIds: string[]) => {
 

@@ -82,7 +82,7 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
         <div>No workers found</div>
       ) : (
         <>
-          <WorkerSelect workers={workers} setActiveWorker={setActiveWorker} />
+          <WorkerSelect workers={workers} setActiveWorker={setActiveWorker}/>
           {activeWorker && (
             <div>
               <h2>Worker: {activeWorker.worker_id}</h2>
