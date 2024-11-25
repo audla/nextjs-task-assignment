@@ -169,9 +169,11 @@ export type Assignment = {
     assignment_status: "TODO" | "DONE" ;
     Workers: string[];
     Tasks: string[];
-    assigned_at: Date;
+    assigned_at: string;
     completed_at: Date;
     Notifications: string[];
+    WorkerFirstName: string;
+    WorkerLastName: string;
 };
 
 export const getAllAssignments = async ({ filterByFormula = undefined }: GetAllAssignmentsParams): Promise<Assignment[]> => {

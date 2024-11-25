@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import AssignmentsList from './WorkersList';
 
 const fetchAssignments = async (assignmentIds: string[]) => {
   const response = await fetch('/api/assignments', {
@@ -92,6 +93,7 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
                 <p>Error fetching assignments: {(error as Error).message}</p>
               ) : (
                 <ul>
+                  <AssignmentsList assignments={assignmentsData || []} />
                   {assignmentsData?.map((assignment: Assignment) => (
                     <li key={assignment.id}>
                       {assignment.assignment_id}: {assignment.Titre}: {assignment.assignment_status}
