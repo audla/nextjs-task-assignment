@@ -34,7 +34,7 @@ const fetchAssignments = async (assignmentIds: string[]) => {
 
 const deleteAssignmentAndTasks = async (assignmentId: string) => {
   // Assuming that there's a method to delete tasks by assignmentId
-  const response = await fetch(`/api/assignments/${assignmentId}/delete`, {
+  const response = await fetch(`/api/assignments/${assignmentId}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',

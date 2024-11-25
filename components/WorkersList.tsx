@@ -106,31 +106,6 @@ export default function AssignmentsList({assignments, onDelete}: {assignments: A
                     Move<span className="sr-only">, {assignment.Titre}</span>
                   </Link>
                 </MenuItem>
-                <MenuItem>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <button
-                        className="block w-full text-left px-3 py-1 text-sm/6 text-red-600 data-[focus]:bg-gray-50 data-[focus]:outline-none"
-                      >
-                        Delete<span className="sr-only">, {assignment.Titre}</span>
-                      </button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete the assignment and its associated tasks.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => onDelete(assignment.id)}>
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </MenuItem>
               </MenuItems>
             </Menu>
           </div>
