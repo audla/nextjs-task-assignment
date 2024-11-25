@@ -1,7 +1,19 @@
 import { getAssignmentById, getTaskById } from '@/lib/airtable';
 import { getErrorMessage } from '@/lib/utils';
 import { Metadata } from 'next';
-import Link from 'next/link';
+
+// Helper function to format date and time
+const formatDateTime = (isoString: string) => {
+  const date = new Date(isoString);
+  return new Intl.DateTimeFormat('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  }).format(date);
+};
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   try {
@@ -21,7 +33,7 @@ export default async function AssignmentPage({ params }: { params: { id: string 
 
     return (
       <div className="bg-gray-900 min-h-screen p-12 pb-24 pt-50 sm:p-24 flex items-start">
-        <div className="bg-white min-h-[90vh] max-w-[1100px] w-full mx-auto p-6 rounded-md shadow-xl flex flex-col relative">
+        <div className="bg-white min-h-[90vh] max-w-[1100px] w-full mx-auto p-6 rounded-md shadow-xl flex flex-col">
           <h1 className="text-red-500 text-4xl font-bold mb-6">Assignment Details</h1>
 
           <p className="mb-4">
@@ -35,9 +47,9 @@ export default async function AssignmentPage({ params }: { params: { id: string 
             <span
               className={
                 assignment.assignment_status === 'TODO'
-                  ? 'text-red-500 font-bold'
+                  ? 'text-red-500 font-bold text-2xl'
                   : assignment.assignment_status === 'DONE'
-                  ? 'text-green-500 font-bold'
+                  ? 'text-green-500 font-bold text-2xl'
                   : 'text-gray-700'
               }
             >
@@ -59,38 +71,23 @@ export default async function AssignmentPage({ params }: { params: { id: string 
                     <p>Status: {task.status}</p>
                     <p>Description: {task.description}</p>
                     <p>Priority: {task.priority}</p>
+                    <p>Created at: {formatDateTime(task.created_at)}</p>
                   </li>
                 ))}
               </ul>
             </div>
           )}
-
-          {/* Home Button */}
-          <Link
-            href="http://localhost:3000"
-            className="absolute bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold"
-          >
-            Home
-          </Link>
         </div>
       </div>
     );
   } catch (error: unknown) {
     return (
-      <div className="bg-gray-100 min-h-screen flex items-center justify-center">
-        <div className="bg-white p-8 rounded-md shadow-md max-w-md w-full text-center relative">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-md shadow-md max-w-md w-full text-center">
           <h1 className="text-2xl font-bold text-red-500 mb-6">Error</h1>
           <p className="text-gray-700">
             Failed to load assignment: {getErrorMessage(error)}
           </p>
-
-          {/* Home Button */}
-          <Link
-            href="http://localhost:3000"
-            className="absolute bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold"
-          >
-            Home
-          </Link>
         </div>
       </div>
     );
