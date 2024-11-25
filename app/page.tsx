@@ -1,4 +1,3 @@
-
 import WorkerComponent from "@/components/WorkerComponent";
 import { getAllTasks, getAllWorkers } from "@/lib/airtable";
 import React, { Suspense } from "react";

@@ -19,8 +19,9 @@ export default async function AssignmentPage({ params }: { params: { id: string 
     const tasks = assignment.Tasks ? await Promise.all(assignment.Tasks.map(getTaskById)) : [];
 
     return (
-      <div>
-        <h1>Assignment Details</h1>
+      <div className="bg-gray-900  items-start min-h-screen p-8 pb-20 pt-50 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <div className="bg-white min-h-[90vh] max-w-[975px] mx-auto p-4 flex flex-col justify-start items-start rounded-md shadow-xl">
+        <h1 className="text-red-500 text-4xl font-[family-name:var(--font-geist-sans)] font-bold">Assignment Details</h1>
         <p>
           <strong>ID:</strong> {assignment.id}
         </p>
@@ -47,6 +48,7 @@ export default async function AssignmentPage({ params }: { params: { id: string 
             </ul>
           </div>
         )}
+      </div>
       </div>
     );
   } catch (error: unknown) {
