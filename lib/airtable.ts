@@ -82,8 +82,8 @@ type GetAllTasksParams ={
 
 export type Task = {
     id: string;
-    status: "Not ready" | "In progress" | "Completed";  // adjust as needed
-    priority: "Low" | "Medium" | "High" | "Very important";  // adjust as needed
+    status: "Not Started" | "Not Ready" | "Ready";  // adjust as needed
+    priority: "Not that important" | "Important" | "Very important";  // adjust as needed
     created_at: string;
     AssignmentID: string[];
     title: string;

@@ -16,16 +16,31 @@ const formatDateTime = (isoString: string) => {
   }).format(date);
 };
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata(context: { params: { id?: string } }): Promise<Metadata> {
+  const { params } = context;
+
   try {
+    if (!params?.id) {
+      throw new Error("Assignment ID is missing.");
+    }
+
+    // Safely fetch assignment metadata
     const assignment = await getAssignmentById(params.id);
     return { title: `Assignment: ${assignment.Titre}` };
-  } catch {
-    return { title: 'Assignment Not Found' };
+  } catch (error) {
+    console.error("Failed to generate metadata:", error);
+    return { title: "Assignment Not Found" };
   }
 }
 
+
 export default async function AssignmentPage({ params }: { params: { id: string } }) {
+  
+  const handleSave = (taskId: string, value: string) => {
+    // Call API or perform any action to save the `completed_at` value
+    console.log(`Save completed_at for task ${taskId}: ${value}`);
+  };
+
   try {
     const assignment = await getAssignmentById(params.id);
 
@@ -68,11 +83,44 @@ export default async function AssignmentPage({ params }: { params: { id: string 
                   <li key={task.id} className="mb-4">
                     <p>
                       <strong>Task {index + 1}:</strong> {task.title}
+                    </p> 
+                    <p>
+                      Priority:{' '}
+                      <strong><span
+                        className={
+                          task.priority === 'Not that important'
+                            ? 'text-green-500'
+                            : task.priority === 'Important'
+                            ? 'text-orange-500'
+                            : task.priority === 'Very important'
+                            ? 'text-red-600'
+                            : ''
+                        }
+                      >
+                        {task.priority}
+                      </span></strong>
                     </p>
-                    <p>Status: {task.status}</p>
+                    <p>
+                      Status:{' '}
+                      <strong>
+                        <span
+                        className={
+                          task.status === 'Not Started'
+                            ? 'text-slate-700 !important'
+                            : task.status === 'Not Ready'
+                            ? 'text-pink-500 !important'
+                            : task.status === 'Ready'
+                            ? 'text-green-500 !important'
+                            : ''
+                        }
+                      >
+                        {task.status}
+                      </span>
+                      </strong>
+                    </p>
                     <p>Description: {task.description}</p>
-                    <p>Priority: {task.priority}</p>
                     <p>Created at: {formatDateTime(task.created_at)}</p>
+
                   </li>
                 ))}
               </ul>
