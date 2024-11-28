@@ -26,9 +26,9 @@ export default async function AssignmentPage({ params }: { params: { id: string 
     const tasks = assignment.Tasks ? await Promise.all(assignment.Tasks.map(getTaskById)) : [];
 
     return (
-      <div className="bg-gray-900 min-h-screen p-12 pb-24 pt-50 sm:p-24 flex items-start">
-        <div className="bg-white min-h-[90vh] max-w-[1100px] w-full mx-auto p-6 rounded-md shadow-xl flex flex-col relative">
-          <h1 className="text-red-500 text-4xl font-bold mb-6">Assignment Details</h1>
+      <div className="bg-gray-900 min-h-screen p-12 pb-24 pt-50 sm:p-24 flex items-start print:bg-white print:p-0">
+        <div className="bg-white min-h-[90vh] max-w-[1100px] w-full mx-auto p-6 rounded-md shadow-xl flex flex-col relative print:shadow-none print:min-h-0">
+          <h1 className="text-red-500 text-4xl font-bold mb-6 print:text-black">Assignment Details</h1>
 
           <p className="mb-4">
             <strong>ID:</strong> {assignment.id}
@@ -41,10 +41,10 @@ export default async function AssignmentPage({ params }: { params: { id: string 
             <span
               className={
                 assignment.assignment_status === "TODO"
-                  ? "text-red-500 font-bold text-2xl"
+                  ? "text-red-500 font-bold text-2xl print:text-black print:text-base"
                   : assignment.assignment_status === "DONE"
-                  ? "text-green-500 font-bold text-2xl"
-                  : "text-gray-700"
+                  ? "text-green-500 font-bold text-2xl print:text-black print:text-base"
+                  : "text-gray-700 print:text-black print:text-base"
               }
             >
               {assignment.assignment_status}
@@ -61,28 +61,33 @@ export default async function AssignmentPage({ params }: { params: { id: string 
             </div>
           )}
 
-          <Link
-            href="/"
-            className="absolute bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold"
-          >
-            Home
-          </Link>
+          {/* Action Buttons */}
+          <div className="absolute bottom-6 right-6 flex space-x-4">
+            <Link
+              href="/"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold print:hidden"
+            >
+              Home
+            </Link>
+          </div>
         </div>
       </div>
     );
   } catch (error: unknown) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="bg-white p-8 rounded-md shadow-md max-w-md w-full text-center relative">
-          <h1 className="text-2xl font-bold text-red-500 mb-6">Error</h1>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 print:bg-white print:p-0">
+        <div className="bg-white p-8 rounded-md shadow-md max-w-md w-full text-center relative print:shadow-none">
+          <h1 className="text-2xl font-bold text-red-500 mb-6 print:text-black">Error</h1>
           <p className="text-gray-700">Failed to load assignment: {getErrorMessage(error)}</p>
 
-          <Link
-            href="/"
-            className="absolute bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold"
-          >
-            Home
-          </Link>
+          <div className="absolute bottom-6 right-6 flex space-x-4">
+            <Link
+              href="/"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold print:hidden"
+            >
+              Home
+            </Link>
+          </div>
         </div>
       </div>
     );

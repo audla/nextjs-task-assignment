@@ -15,8 +15,8 @@ export default function TaskList({ tasks }: TaskListProps) {
   const [saving, setSaving] = useState(false);
 
   const handleStatusChange = (taskId: string, newStatus: Task["status"]) => {
-    for(let i = 0; i < updatedTasks.length; i++) {
-      if(updatedTasks[i].id === taskId) {
+    for (let i = 0; i < updatedTasks.length; i++) {
+      if (updatedTasks[i].id === taskId) {
         updatedTasks[i].status = newStatus;
         break;
       }
@@ -42,13 +42,17 @@ export default function TaskList({ tasks }: TaskListProps) {
       toast({
         title: "Changes saved successfully!",
         description: "Nous avons enregistré les modifications.",
-      })
+      });
     } catch (error) {
       console.error("Error saving tasks:", error);
       alert("Failed to save changes. Please try again.");
     } finally {
       setSaving(false);
     }
+  };
+
+  const handlePrint = () => {
+    window.print(); // Trigger the browser's print dialog
   };
 
   return (
@@ -60,7 +64,7 @@ export default function TaskList({ tasks }: TaskListProps) {
               <strong>Task {index + 1}:</strong> {task.title}
             </p>
             <p>
-              Priority:{' '}
+              Priority:{" "}
               <strong>
                 <span
                   className={
@@ -89,15 +93,36 @@ export default function TaskList({ tasks }: TaskListProps) {
         ))}
       </ul>
 
-      <button
-        onClick={saveChanges}
-        className={`mt-6 px-4 py-2 rounded-lg text-white font-bold ${
-          saving ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
-        }`}
-        disabled={saving}
-      >
-        {saving ? "Saving..." : "Save Changes"}
-      </button>
+      {/* Save Button */}
+      <div className="mt-6 print:hidden">
+        <button
+          onClick={saveChanges}
+          className={`px-4 py-2 rounded-lg text-white font-bold ${
+            saving ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+          }`}
+          disabled={saving}
+        >
+          {saving ? "Saving..." : "Save Changes"}
+        </button>
+      </div>
+
+      {/* Print Button */}
+      <div className="mt-6 print:hidden">
+        <button
+          onClick={handlePrint}
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold"
+        >
+          Print
+        </button>
+      </div>
+
+      <style jsx>{`
+        @media print {
+          .print:hidden {
+            display: none;
+          }
+        }
+      `}</style>
     </div>
   );
 }
