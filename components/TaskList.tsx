@@ -33,8 +33,8 @@ export default function TaskList({ tasks }: TaskListProps) {
   const saveChanges = async () => {
     setSaving(true);
     try {
-      // Send the updated tasks to Airtable
-      const response = await fetch("/api/saveTasks", {
+      // Send updated tasks to the API
+      const response = await fetch("/api/tasks", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +93,6 @@ export default function TaskList({ tasks }: TaskListProps) {
         ))}
       </ul>
 
-      {/* Save Button */}
       <button
         onClick={saveChanges}
         className={`mt-6 px-4 py-2 rounded-lg text-white font-bold ${
