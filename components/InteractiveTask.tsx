@@ -1,6 +1,7 @@
 "use client";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Task } from "@/lib/airtable";
 
 const STATUS_COLORS: Record<string, string> = {
   "Not Started": "text-gray-500",
@@ -11,14 +12,14 @@ const STATUS_COLORS: Record<string, string> = {
 interface InteractiveTaskProps {
   taskId: string;
   currentStatus: string;
-  onStatusChange: (taskId: string, newStatus: string) => void;
+  onStatusChange: (taskId: string, newStatus: Task["status"]) => void;
 }
 
 export default function InteractiveTask({ taskId, currentStatus, onStatusChange }: InteractiveTaskProps) {
   return (
     <Select
       defaultValue={currentStatus}
-      onValueChange={(newStatus) => onStatusChange(taskId, newStatus)}
+      onValueChange={(newStatus: Task["status"]) => onStatusChange(taskId, newStatus)}
     >
       <SelectTrigger>
         <SelectValue placeholder={currentStatus} />

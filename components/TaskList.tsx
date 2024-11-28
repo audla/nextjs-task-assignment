@@ -2,32 +2,26 @@
 
 import { useState } from "react";
 import InteractiveTask from "@/components/InteractiveTask";
-
-interface Task {
-  id: string;
-  title: string;
-  status: string;
-  priority: string;
-  description: string;
-  created_at: string;
-}
+import { Task } from "@/lib/airtable";
+import { toast } from "@/hooks/use-toast";
 
 interface TaskListProps {
   tasks: Task[];
 }
 
 export default function TaskList({ tasks }: TaskListProps) {
-  const [updatedTasks, setUpdatedTasks] = useState(
-    tasks.map((task) => ({ id: task.id, status: task.status }))
-  );
+  const [updatedTasks, setUpdatedTasks] = useState(tasks);
+
   const [saving, setSaving] = useState(false);
 
-  const handleStatusChange = (taskId: string, newStatus: string) => {
-    setUpdatedTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, status: newStatus } : task
-      )
-    );
+  const handleStatusChange = (taskId: string, newStatus: Task["status"]) => {
+    for(let i = 0; i < updatedTasks.length; i++) {
+      if(updatedTasks[i].id === taskId) {
+        updatedTasks[i].status = newStatus;
+        break;
+      }
+    }
+    setUpdatedTasks([...updatedTasks]);
   };
 
   const saveChanges = async () => {
@@ -45,8 +39,10 @@ export default function TaskList({ tasks }: TaskListProps) {
       if (!response.ok) {
         throw new Error("Failed to save tasks to Airtable");
       }
-
-      alert("Changes saved successfully!");
+      toast({
+        title: "Changes saved successfully!",
+        description: "Nous avons enregistré les modifications.",
+      })
     } catch (error) {
       console.error("Error saving tasks:", error);
       alert("Failed to save changes. Please try again.");
@@ -85,10 +81,10 @@ export default function TaskList({ tasks }: TaskListProps) {
             <InteractiveTask
               taskId={task.id}
               currentStatus={task.status}
-              onStatusChange={(newStatus) => handleStatusChange(task.id, newStatus)}
+              onStatusChange={handleStatusChange}
             />
             <p>Description: {task.description}</p>
-            <p>Created at: {new Date(task.created_at).toLocaleString()}</p>
+            <p>Created at: {task.created_at}</p>
           </li>
         ))}
       </ul>

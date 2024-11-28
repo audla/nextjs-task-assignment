@@ -12,9 +12,6 @@ export default async function Home() {
 
   // const assignments = await getAllAssignments({});
 
-  console.log(`tasks`, tasks.length);
-  console.log(`workers`, workers.length);
-  // console.log(`assignments`, assignments.length);
 
 
 

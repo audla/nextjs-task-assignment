@@ -28,12 +28,6 @@ export type Worker = {
 
 export const getAllWorkers = async ({ filterByFormula = undefined }: GetAllWorkersParams): Promise<Worker[]> => {
 
-
-    // set a 10second delay to simulate a real-world scenario
-    setTimeout(() => {
-        console.log(`Workers fetched`);
-    }, 10000);
-
     const baseSelectOptions: BaseSelectOption = {
         maxRecords: 50,
         view: "Grid view",
@@ -82,7 +76,7 @@ type GetAllTasksParams ={
 
 export type Task = {
     id: string;
-    status: "Not Started" | "Not Ready" | "Ready";  // adjust as needed
+    status: "Not ready" | "In progress" | "Completed";  // adjust as needed
     priority: "Not that important" | "Important" | "Very important";  // adjust as needed
     created_at: string;
     AssignmentID: string[];
