@@ -56,6 +56,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Tasks updated successfully" });
     } catch (error: any) {
       console.error("Airtable update error:", error);
-      return NextResponse.json({ error: "Failed to update tasks" }, { status: 500 });
+      return NextResponse.json(error, { status: error.statusCode });
     }
   }
