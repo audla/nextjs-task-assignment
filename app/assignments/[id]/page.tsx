@@ -62,10 +62,10 @@ export default async function AssignmentPage({ params }: { params: { id: string 
           )}
 
           {/* Action Buttons */}
-          <div className="absolute bottom-6 right-6 flex space-x-4">
+          <div className="absolute top-4 right-4 flex space-x-4">
             <Link
               href="/"
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold print:hidden"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full shadow-md text-2xl font-bold print:hidden"
             >
               Home
             </Link>
@@ -80,10 +80,10 @@ export default async function AssignmentPage({ params }: { params: { id: string 
           <h1 className="text-2xl font-bold text-red-500 mb-6 print:text-black">Error</h1>
           <p className="text-gray-700">Failed to load assignment: {getErrorMessage(error)}</p>
 
-          <div className="absolute bottom-6 right-6 flex space-x-4">
+          <div className="absolute top-4 right-4 flex space-x-4">
             <Link
               href="/"
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full shadow-md text-lg font-bold print:hidden"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full shadow-md text-2xl font-bold print:hidden"
             >
               Home
             </Link>
