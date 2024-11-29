@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import AssignmentsList from './WorkersList';
+import { toast } from '@/hooks/use-toast';
 
 const fetchAssignments = async (assignmentIds: string[]) => {
   const response = await fetch('/api/assignments', {
@@ -64,11 +65,17 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
     mutationFn: deleteAssignmentAndTasks,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['assignments', activeWorker?.Assignments || []] });
-      alert('Assignment and tasks deleted successfully');
+      toast({
+        title: "Changes saved successfully!",
+        description: "Nous avons enregistré les modifications.",
+      });
     },
     onError: (error: Error) => {
       console.error('Error deleting assignment:', error);
-      alert(`Failed to delete assignment: ${error.message}`);
+      toast({
+        title: "Error!",
+        description: "Nous avons rencontre une erreur.",
+      });
     },
   });
 
