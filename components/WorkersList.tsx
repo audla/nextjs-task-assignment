@@ -46,6 +46,12 @@ export default function AssignmentsList({assignments, onDelete}: {assignments: A
               <p className="whitespace-nowrap">
                 Assigné le: <time dateTime={assignment.assigned_at}>{assignment.assigned_at}</time>
               </p>
+               
+              {!assignment.completed_at?(<div>Not done yet</div>):(<div>Completed le: <time dateTime={assignment.completed_at}> {assignment.completed_at}</time></div>)}
+              
+              <p className="whitespace-nowrap">
+                
+              </p>
               <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
                 <circle r={1} cx={1} cy={1} />
               </svg>

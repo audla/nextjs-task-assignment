@@ -173,7 +173,7 @@ export type Assignment = {
     Workers: string[];
     Tasks: string[];
     assigned_at: string;
-    completed_at: Date;
+    completed_at: string;
     Notifications: string[];
     WorkerFirstName: string;
     WorkerLastName: string;
