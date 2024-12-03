@@ -1,8 +1,12 @@
-import { getAssignmentById, getTaskById } from "@/lib/airtable";
+import { getAssignmentById, getTaskById, getAllWorkers } from "@/lib/airtable";
 import { getErrorMessage } from "@/lib/utils";
 import TaskList from "@/components/TaskList";
 import { Metadata } from "next";
 import Link from "next/link";
+import{ WorkerSelect } from "@/components/WorkerComponent";
+import WorkerSelectionComponent from "@/components/WorkerComponentSelection";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(context: { params: { id?: string } }): Promise<Metadata> {
   const { params } = context;
@@ -24,12 +28,14 @@ export default async function AssignmentPage({ params }: { params: { id: string 
   try {
     const assignment = await getAssignmentById(params.id);
     const tasks = assignment.Tasks ? await Promise.all(assignment.Tasks.map(getTaskById)) : [];
+    const workers = await getAllWorkers({  });
 
     return (
-      <div className="bg-gray-900 min-h-screen p-12 pb-24 pt-50 sm:p-24 flex items-start print:bg-white print:p-0">
+      <div className="bg-gray-900 min-h-screen p-12 pb-24 pt-50 sm:p-24 flex items-start print:bg-white print:p-0">\
+
         <div className="bg-white min-h-[90vh] max-w-[1100px] w-full mx-auto p-6 rounded-md shadow-xl flex flex-col relative print:shadow-none print:min-h-0">
           <h1 className="text-red-500 text-4xl font-bold mb-6 print:text-black">Assignment Details</h1>
-
+          
           <p className="mb-4">
             <strong>ID:</strong> {assignment.id}
           </p>
@@ -70,6 +76,12 @@ export default async function AssignmentPage({ params }: { params: { id: string 
               Home
             </Link>
           </div>
+        </div>
+        <div className="bg-gray-300 w-[300px] p-4 rounded-md shadow-lg flex flex-col print-hidden">
+        <WorkerSelectionComponent workers={workers} />
+
+        <Textarea className="bg-gray-100 py" placeholder="Type your message here."/>
+        <Button variant="default">Send</Button>
         </div>
       </div>
     );

@@ -250,3 +250,88 @@ export const deleteAssignment = async (id: string): Promise<Assignment | string>
 }
 
 
+
+type GetAllMessagesParams ={
+    filterByFormula?: string
+}
+
+export type Message = {
+    id: string;
+    message: string;
+    Assignment: string;
+    Workers: string[];
+    MessageFrom: string;
+    Readby: string;
+    sent_at: string;
+};
+
+export const getAllMessages = async ({ filterByFormula = undefined }: GetAllMessagesParams): Promise<Message[]> => {
+    const baseSelectOptions: BaseSelectOption = {
+        maxRecords: 50,
+        view: "Grid view",
+    };
+
+    if (filterByFormula) {
+        baseSelectOptions.filterByFormula = filterByFormula;
+    }
+
+    const messages: Message[] = [];
+
+    return new Promise((resolve, reject) => {
+        base('messages')
+            .select(baseSelectOptions)
+            .eachPage(
+                function page(records, fetchNextPage) {
+                    // Process each page of records.
+                    records.forEach((record) => {
+                        const messageRecord = {
+                            id: record.getId(),
+                            ...record.fields,
+                        };
+
+                        messages.push(messageRecord as Message);
+                    });
+
+                    // Fetch the next page of records.
+                    fetchNextPage();
+                },
+                function done(err) {
+                    if (err) {
+                        console.error(err);
+                        reject(err);
+                    } else {
+                        // Resolve the promise with the fully populated array.
+                        resolve(messages);
+                    }
+                }
+            );
+    });
+};
+
+
+export const getMessageById = async (id: string): Promise<Message> => {
+    return new Promise((res, rej) =>
+        base('Messages').find(id, function(err, record) {
+            if (err || !record ) { console.error(err); rej(err); }
+            else{
+                const messageRecordFields= {id:record?.id, ...record.fields} as unknown as Message
+                res(messageRecordFields);
+            }
+        })
+    )
+}
+
+export const deleteMessage = async (id: string): Promise<Message | string> => {
+    return new Promise((res, rej) =>
+        base('Messages').destroy(id, function(err, deletedRecord) {
+            if (err || !deletedRecord) { console.error(err); rej(err.message as string); }
+            else{
+                res({
+                    id: deletedRecord?.id,
+                    ...deletedRecord.fields
+                } as unknown as Message);
+            }
+        })
+    )
+}
+

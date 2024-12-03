@@ -3,17 +3,6 @@
 import { Assignment, Worker } from '@/lib/airtable';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import AssignmentsList from './WorkersList';
@@ -110,7 +99,7 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
   );
 }
 
-function WorkerSelect({
+export function WorkerSelect({
   workers,
   setActiveWorker,
 }: {
