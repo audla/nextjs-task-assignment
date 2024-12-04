@@ -19,9 +19,8 @@ export default function InteractiveTask({ taskId, currentStatus, onStatusChange 
   return (
     <Select
       defaultValue={currentStatus}
-      onValueChange={(newStatus: Task["status"]) => onStatusChange(taskId, newStatus)}
-    >
-      <SelectTrigger>
+      onValueChange={(newStatus: Task["status"]) => onStatusChange(taskId, newStatus)}>
+      <SelectTrigger className="w-35">
         <SelectValue placeholder={currentStatus} />
       </SelectTrigger>
       <SelectContent>

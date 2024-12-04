@@ -79,9 +79,13 @@ export default async function AssignmentPage({ params }: { params: { id: string 
         </div>
         <div className="bg-gray-300 w-[300px] p-4 rounded-md shadow-lg flex flex-col print-hidden">
         <WorkerSelectionComponent workers={workers} />
-
-        <Textarea className="bg-gray-100 py" placeholder="Type your message here."/>
-        <Button variant="default">Send</Button>
+        <div className="relative py-2">
+        <Textarea className="bg-gray-100 w-full pr-5 py-2 resize-none " 
+        placeholder="Type your message here." 
+        rows={3}/>
+        <Button variant="default"
+        className="absolute bottom-2 right-2">Send</Button>
+        </div>
         </div>
       </div>
     );

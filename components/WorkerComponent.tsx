@@ -108,7 +108,7 @@ export function WorkerSelect({
 }) {
   return (
     <Select onValueChange={(value) => setActiveWorker(workers.find((worker) => worker.worker_id === value) || null)}>
-      <SelectTrigger>
+      <SelectTrigger className="w-40">
         <SelectValue placeholder="Select a worker" />
       </SelectTrigger>
       <SelectContent>
