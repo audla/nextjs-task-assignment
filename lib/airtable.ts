@@ -337,17 +337,17 @@ export const deleteMessage = async (id: string): Promise<Message | string> => {
 
 type NewMessage = {
     content: string;
-    author: string;
+    workerId: string;
     timestamp?: string;
   };
   
-  export async function createMessage({ content, author, timestamp }: NewMessage) {
+  export async function createMessage({ content, workerId, timestamp }: NewMessage) {
     try {
-        console.log("Creating message:", { content, author, timestamp });
+        console.log("Creating message:", { content, workerId, timestamp });
 
         const createdRecord = await base('Messages').create({
             message: content,
-            MessageFrom: author,
+            MessageFrom: workerId,
         });
 
         console.log("Created message:", createdRecord);

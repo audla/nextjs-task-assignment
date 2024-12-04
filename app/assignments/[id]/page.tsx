@@ -3,10 +3,10 @@ import { getErrorMessage } from "@/lib/utils";
 import TaskList from "@/components/TaskList";
 import { Metadata } from "next";
 import Link from "next/link";
-import{ WorkerSelect } from "@/components/WorkerComponent";
 import WorkerSelectionComponent from "@/components/WorkerComponentSelection";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import SendMessageForm from "@/components/sendmessage";
 
 export async function generateMetadata(context: { params: { id?: string } }): Promise<Metadata> {
   const { params } = context;
@@ -23,6 +23,33 @@ export async function generateMetadata(context: { params: { id?: string } }): Pr
     return { title: "Assignment Not Found" };
   }
 }
+
+const handleSend = async (message: string, selectedWorkerId: string) => {
+  // Perform client-side validation
+  if (!message.trim() || !selectedWorkerId) {
+    alert("Please select a worker and enter a message.");
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ content: message, workerId: selectedWorkerId }),
+    });
+
+    if (res.ok) {
+      alert("Message sent successfully!");
+    } else {
+      const errorData = await res.json();
+      alert(errorData.error || "Something went wrong.");
+    }
+  } catch (error) {
+    alert("An error occurred while sending the message.");
+  }
+};
 
 export default async function AssignmentPage({ params }: { params: { id: string } }) {
   try {
@@ -77,15 +104,8 @@ export default async function AssignmentPage({ params }: { params: { id: string 
             </Link>
           </div>
         </div>
-        <div className="bg-gray-300 w-[300px] p-4 rounded-md shadow-lg flex flex-col print-hidden">
-        <WorkerSelectionComponent workers={workers} />
-        <div className="relative py-2">
-        <Textarea className="bg-gray-100 w-full pr-5 py-2 resize-none " 
-        placeholder="Type your message here." 
-        rows={3}/>
-        <Button variant="default"
-        className="absolute bottom-2 right-2">Send</Button>
-        </div>
+        <div>
+        <SendMessageForm workers={workers}></SendMessageForm>
         </div>
       </div>
     );

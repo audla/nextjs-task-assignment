@@ -104,10 +104,16 @@ export function WorkerSelect({
   setActiveWorker,
 }: {
   workers: Worker[];
-  setActiveWorker: React.Dispatch<React.SetStateAction<Worker | null>>;
+  setActiveWorker: (worker: Worker | null) => void;
 }) {
+  // When a new value is selected from the dropdown
+  const handleWorkerChange = (value: string) => {
+    // Find the worker object that matches the selected value (worker_id)
+    const selectedWorker = workers.find((worker) => worker.worker_id === value) || null;
+    setActiveWorker(selectedWorker); // Set the selected worker in the parent component
+  };
   return (
-    <Select onValueChange={(value) => setActiveWorker(workers.find((worker) => worker.worker_id === value) || null)}>
+    <Select onValueChange={handleWorkerChange}>
       <SelectTrigger className="w-40">
         <SelectValue placeholder="Select a worker" />
       </SelectTrigger>

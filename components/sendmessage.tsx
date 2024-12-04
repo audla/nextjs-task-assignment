@@ -5,16 +5,26 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import WorkerSelectionComponent from "@/components/WorkerComponentSelection";
 
-export default function AssignmentPage({ params, assignment, tasks, workers }: any) {
+export default function SendMessageForm({ params, assignment, tasks, workers }: any) {
   const [message, setMessage] = useState("");
+  const [selectedWorker, setSelectedWorker] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [feedback, setFeedback] = useState({ success: false, error: "" });
 
+  const handleWorkerSelect = (worker: Worker | null) => {
+    setSelectedWorker(worker); // Update selected worker in state
+  };
+
   const handleSend = async () => {
     if (!message.trim()) {
-      setFeedback({ success: false, error: "Message cannot be empty." });
-      return;
-    }
+        setFeedback({ success: false, error: "Message cannot be empty." });
+        return;
+      }
+  
+      if (!selectedWorker) {
+        setFeedback({ success: false, error: "Please select a worker." });
+        return;
+      }
 
     setIsSending(true);
     setFeedback({ success: false, error: "" });
@@ -23,7 +33,10 @@ export default function AssignmentPage({ params, assignment, tasks, workers }: a
       const response = await fetch("/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({
+            content: message,
+            workerId: selectedWorker,
+          }),
       });
 
       if (!response.ok) {
@@ -45,7 +58,10 @@ export default function AssignmentPage({ params, assignment, tasks, workers }: a
 
       {/* Right Sidebar */}
       <div className="bg-gray-300 w-[300px] p-4 rounded-md shadow-lg flex flex-col print-hidden">
-        <WorkerSelectionComponent workers={workers} />
+        <WorkerSelectionComponent 
+        workers={workers}
+        onWorkerSelect={handleWorkerSelect}
+        />
         <div className="relative py-2">
           <Textarea
             className="bg-gray-100 w-full pr-5 py-2 resize-none"
