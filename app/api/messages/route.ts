@@ -1,45 +1,52 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { createMessage, getAllMessages } from '@/lib/airtable';
 
-export async function POST(req: NextRequest) {
-  const { baseId, tableIdOrName, recordId, text } = await req.json();
-
-  if (!baseId || !tableIdOrName || !recordId || !text) {
-    return NextResponse.json(
-      { error: 'Missing required parameters' },
-      { status: 400 }
-    );
-  }
-
-  const url = `https://api.airtable.com/v0/${baseId}/${tableIdOrName}/${recordId}/comments`;
-  const token = process.env.AIRTABLE_API_KEY;
-
-  if (!token) {
-    return NextResponse.json(
-      { error: 'Missing Airtable API Key' },
-      { status: 500 }
-    );
-  }
-
+export async function POST(req: Request) {
   try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ text }),
-    });
+    const body = await req.json();
+    const { messageIds, newMessage } = body;
 
-    if (!response.ok) {
-      const error = await response.json();
-      return NextResponse.json(error, { status: response.status });
+    // Handle new message creation
+    if (newMessage) {
+      const { content, author, timestamp } = newMessage;
+
+      // Validate required fields
+      if (!content || !author) {
+        return NextResponse.json(
+          { error: 'Missing required fields: content or author' },
+          { status: 400 }
+        );
+      }
+
+      // Create the new message
+      const createdMessage = await createMessage({ content, author, timestamp });
+
+      return NextResponse.json(
+        { message: 'Message created successfully', createdMessage },
+        { status: 201 }
+      );
     }
 
-    const data = await response.json();
-    return NextResponse.json(data, { status: 200 });
-  } catch (error) {
+    // Fetch existing messages by IDs
+    if (!messageIds || !Array.isArray(messageIds)) {
+      return NextResponse.json(
+        { error: 'Invalid or missing messageIds' },
+        { status: 400 }
+      );
+    }
+
+    const filterByFormula = `OR(${messageIds.map((id) => `RECORD_ID()='${id}'`).join(',')})`;
+    const messages = await getAllMessages({ filterByFormula });
+
+    if (!messages.length) {
+      return NextResponse.json({ error: 'No messages found' }, { status: 404 });
+    }
+
+    return NextResponse.json(messages);
+  } catch (error: any) {
+    console.error('Error handling messages:', error);
     return NextResponse.json(
-      { error: 'Failed to add comment', details: (error as Error).message },
+      { error: 'Internal Server Error', details: error.message },
       { status: 500 }
     );
   }
