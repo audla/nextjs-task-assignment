@@ -335,26 +335,29 @@ export const deleteMessage = async (id: string): Promise<Message | string> => {
     )
 }
 
-interface NewMessage {
+type NewMessage = {
     content: string;
     author: string;
     timestamp?: string;
-  }  
-
-export async function createMessage({ content, author, timestamp }: NewMessage) {
-    try {
-      const createdRecord = await base('Messages').create({
-        Content: content,
-        Author: author,
-        Timestamp: timestamp || new Date().toISOString(),
-      });
+  };
   
-      return {
-        id: createdRecord.id,
-        fields: createdRecord.fields,
-      };
-    } catch (error) {
-      console.error('Error creating message:', error);
-      throw new Error('Failed to create message');
+  export async function createMessage({ content, author, timestamp }: NewMessage) {
+    try {
+        console.log("Creating message:", { content, author, timestamp });
+
+        const createdRecord = await base('Messages').create({
+            message: content,
+            MessageFrom: author,
+        });
+
+        console.log("Created message:", createdRecord);
+
+        return {
+            id: createdRecord.id,
+            fields: createdRecord.fields,
+        };
+    } catch (error:any) {
+        console.error('Error creating message:', error);
+        throw new Error(error);
     }
-  }
+}
