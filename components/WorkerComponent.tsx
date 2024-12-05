@@ -104,7 +104,7 @@ export function WorkerSelect({
   setActiveWorker,
 }: {
   workers: Worker[];
-  setActiveWorker: (worker: Worker | null) => void;
+  setActiveWorker: (workers: Worker | null) => void;
 }) {
   // When a new value is selected from the dropdown
   const handleWorkerChange = (value: string) => {

@@ -3,18 +3,19 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Worker } from "@/lib/airtable";
 import WorkerSelectionComponent from "@/components/WorkerComponentSelection";
 
 export default function SendMessageForm({ params, assignment, tasks, workers }: any) {
   const [message, setMessage] = useState("");
-  const [selectedWorker, setSelectedWorker] = useState<string | null>(null);
+  const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [feedback, setFeedback] = useState({ success: false, error: "" });
 
   const handleWorkerSelect = (worker: Worker | null) => {
     setSelectedWorker(worker); // Update selected worker in state
   };
-
+  
   const handleSend = async () => {
     if (!message.trim()) {
         setFeedback({ success: false, error: "Message cannot be empty." });
@@ -26,16 +27,21 @@ export default function SendMessageForm({ params, assignment, tasks, workers }: 
         return;
       }
 
+      console.log("Message to send:", message);
+      console.log("Worker ID to send:", selectedWorker.id);
+
     setIsSending(true);
     setFeedback({ success: false, error: "" });
 
     try {
-      const response = await fetch("/api/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch(`/api/messages`, {
+        method: 'POST',
+        headers: { "Content-Type": "application/json",
+          Accept: "application/json",
+         },
         body: JSON.stringify({
             content: message,
-            workerId: selectedWorker,
+            workerId: selectedWorker.worker_id,
           }),
       });
 

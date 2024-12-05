@@ -24,33 +24,6 @@ export async function generateMetadata(context: { params: { id?: string } }): Pr
   }
 }
 
-const handleSend = async (message: string, selectedWorkerId: string) => {
-  // Perform client-side validation
-  if (!message.trim() || !selectedWorkerId) {
-    alert("Please select a worker and enter a message.");
-    return;
-  }
-
-  try {
-    const res = await fetch("/api/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content: message, workerId: selectedWorkerId }),
-    });
-
-    if (res.ok) {
-      alert("Message sent successfully!");
-    } else {
-      const errorData = await res.json();
-      alert(errorData.error || "Something went wrong.");
-    }
-  } catch (error) {
-    alert("An error occurred while sending the message.");
-  }
-};
-
 export default async function AssignmentPage({ params }: { params: { id: string } }) {
   try {
     const assignment = await getAssignmentById(params.id);

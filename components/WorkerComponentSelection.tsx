@@ -11,10 +11,10 @@ export default function WorkerSelectionComponent({
   workers: Worker[];
   onWorkerSelect: (worker: Worker | null) => void; // Callback to update selected worker
 }) {
-  const [activeWorker, setActiveWorker] = useState<Worker | null>(workers[0] || null);
+  const [activeWorker, setActiveWorker] = useState<Worker | null>(workers[0] || "None");
   
 
-  const handleWorkerSelect = (worker: Worker) => {
+  const handleWorkerSelect = (worker: Worker | null) => {
     setActiveWorker(worker);
     onWorkerSelect(worker); // Call the callback to update selected worker in parent component
   };
