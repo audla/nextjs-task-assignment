@@ -55,6 +55,11 @@ export default function TaskList({ tasks }: TaskListProps) {
     window.print(); // Trigger the browser's print dialog
   };
 
+  if(tasks.length === 0){
+    return <p>No tasks found.</p>;
+  }
+
+
   return (
     <div>
       <ul>

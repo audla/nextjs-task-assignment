@@ -1,5 +1,28 @@
-import { NextResponse } from "next/server";
-import { createMessage } from "@/lib/airtable";
+import { NextRequest, NextResponse } from "next/server";
+import { createMessage, getMessages } from "@/lib/airtable";
+
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const ids = searchParams.get('ids');
+
+    if (!ids) {
+      return NextResponse.json({ error: "Missing 'ids' parameter" }, { status: 400 });
+    }
+
+    const messageIds = ids.split(',');
+
+    // Fetch the messages from Airtable
+    const messages = await getMessages(messageIds);
+
+    // Respond with the fetched messages
+    return NextResponse.json(messages, { status: 200 });
+  } catch (error: any) {
+    console.error("Error fetching messages:", error);
+    return NextResponse.json({ error: "Failed to fetch messages", message: error.message }, { status: 500 });
+  }
+}
 
 export async function POST(req: Request) {
   try {

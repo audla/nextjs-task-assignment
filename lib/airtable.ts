@@ -335,6 +335,24 @@ export const deleteMessage = async (id: string): Promise<Message | string> => {
     )
 }
 
+export async function getMessages(messageIds: string[]) {
+    const table = base('Messages');
+  
+    try {
+      const records = await table.select({
+        filterByFormula: `OR(${messageIds.map(id => `RECORD_ID()='${id}'`).join(',')})`
+      }).all();
+  
+      return records.map(record => ({
+        id: record.id,
+        ...record.fields,
+      }));
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      throw error;
+    }
+  }
+
 type NewMessage = {
     content: string;
     workerId: string;

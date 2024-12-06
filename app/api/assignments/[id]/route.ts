@@ -51,3 +51,26 @@ export async function DELETE(
     );
   }
 }
+
+
+
+export async function GET(  request: Request,
+  { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const assignmentId = (await params).id;
+
+    if (!assignmentId) {
+      return NextResponse.json({ error: "Missing 'assignmentId' parameter" }, { status: 400 });
+    }
+
+
+    // Fetch the messages from Airtable
+    const messages = await getAssignmentById(assignmentId);
+
+    // Respond with the fetched messages
+    return NextResponse.json(messages, { status: 200 });
+  } catch (error: any) {
+    console.error("Error fetching messages:", error);
+    return NextResponse.json({ error: "Failed to fetch messages", message: error.message }, { status: 500 });
+  }
+}
