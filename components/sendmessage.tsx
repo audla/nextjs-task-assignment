@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Worker } from "@/lib/airtable";
+import { Message } from "@/lib/airtable";
 import WorkerSelectionComponent from "@/components/WorkerComponentSelection";
 
-export default function SendMessageForm({ params, assignment, tasks, workers }: any) {
+export default function SendMessageForm({ params, assignment, tasks, workers, messages }: any) {
   const [message, setMessage] = useState("");
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const [isSending, setIsSending] = useState(false);
@@ -41,7 +43,9 @@ export default function SendMessageForm({ params, assignment, tasks, workers }: 
          },
         body: JSON.stringify({
             content: message,
-            workerId: selectedWorker.worker_id,
+            workerId: selectedWorker.id, 
+            assignmentId: assignment,
+            Message: assignment,
           }),
       });
 
@@ -84,9 +88,24 @@ export default function SendMessageForm({ params, assignment, tasks, workers }: 
           >
             {isSending ? "Sending..." : "Send"}
           </Button>
+           </div>
           {feedback.error && <p className="text-red-500 mt-2">{feedback.error}</p>}
           {feedback.success && <p className="text-green-500 mt-2">Message sent successfully!</p>}
         </div>
+        <div>
+          {Array.isArray(messages) && messages.length > 0 ? (
+            <ul>
+              {messages.map((message, index) => (
+                <li key={message.id || index} className="mb-4">
+                  <p>
+                    <strong>Message {index + 1}:</strong> {message.message || "No content"}
+                  </p>
+                </li>
+              ))}
+            </ul> 
+          ) : (
+            <p>No messages found.</p>
+          )}
       </div>
     </div>
   );

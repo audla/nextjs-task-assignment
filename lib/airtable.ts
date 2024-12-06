@@ -174,7 +174,7 @@ export type Assignment = {
     Tasks: string[];
     assigned_at: string;
     completed_at: string;
-    Notifications: string[];
+    Messages: string[];
     WorkerFirstName: string;
     WorkerLastName: string;
 };
@@ -339,15 +339,17 @@ type NewMessage = {
     content: string;
     workerId: string;
     timestamp?: string;
+    assignmentId: string;
   };
   
-  export async function createMessage({ content, workerId, timestamp }: NewMessage) {
+  export async function createMessage({ content, workerId, timestamp, assignmentId }: NewMessage) {
     try {
-        console.log("Creating message:", { content, workerId, timestamp });
+        console.log("Creating message:", { content, workerId, timestamp, assignmentId });
 
         const createdRecord = await base('Messages').create({
             message: content,
-            MessageFrom: workerId,
+            MessageFrom: [workerId],
+            Assignment: [assignmentId],
         });
 
         console.log("Created message:", createdRecord);

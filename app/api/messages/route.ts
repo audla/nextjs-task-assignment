@@ -3,7 +3,7 @@ import { createMessage } from "@/lib/airtable";
 
 export async function POST(req: Request) {
   try {
-    const { content, workerId } = await req.json();
+    const { content, workerId, assignmentId } = await req.json();
 
     // Validate the input
     if (!content || !workerId) {
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     }
 
     // Create the message in Airtable
-    const newMessage = await createMessage({ content, workerId });
+    const newMessage = await createMessage({ content, workerId, assignmentId });
 
     // Respond with the newly created message
     return NextResponse.json(newMessage, { status: 201 });

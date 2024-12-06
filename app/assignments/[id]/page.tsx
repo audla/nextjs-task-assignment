@@ -1,4 +1,4 @@
-import { getAssignmentById, getTaskById, getAllWorkers } from "@/lib/airtable";
+import { getAssignmentById, getTaskById, getAllWorkers, getMessageById } from "@/lib/airtable";
 import { getErrorMessage } from "@/lib/utils";
 import TaskList from "@/components/TaskList";
 import { Metadata } from "next";
@@ -29,6 +29,7 @@ export default async function AssignmentPage({ params }: { params: { id: string 
     const assignment = await getAssignmentById(params.id);
     const tasks = assignment.Tasks ? await Promise.all(assignment.Tasks.map(getTaskById)) : [];
     const workers = await getAllWorkers({  });
+    const messages = assignment.Messages ? await Promise.all(assignment.Messages.map(getMessageById)) : [];
 
     return (
       <div className="bg-gray-900 min-h-screen p-12 pb-24 pt-50 sm:p-24 flex items-start print:bg-white print:p-0">\
@@ -38,6 +39,9 @@ export default async function AssignmentPage({ params }: { params: { id: string 
           
           <p className="mb-4">
             <strong>ID:</strong> {assignment.id}
+          </p>
+          <p className="mb-4">
+            <strong>Number:</strong> {assignment.assignment_id}
           </p>
           <p className="mb-4">
             <strong>Title:</strong> {assignment.Titre}
@@ -78,7 +82,10 @@ export default async function AssignmentPage({ params }: { params: { id: string 
           </div>
         </div>
         <div>
-        <SendMessageForm workers={workers}></SendMessageForm>
+          
+        <div>
+        <SendMessageForm assignment={params.id} workers={workers}></SendMessageForm>
+        </div>
         </div>
       </div>
     );
