@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import WorkerSelectionComponent from "@/components/WorkerComponentSelection";
 import { Message, Worker } from "@/lib/airtable";
+import { ChatScrollArea } from "./chat-scroll-area";
 
 const sendMessage = async ({
   content,
@@ -38,26 +39,7 @@ const fetchMessages = async (ids: string[]) => {
   return response.json();
 };
 
-const MessagesStream = ({ messages }: { messages: Message[] }) => {
-  return (
-    <div>
-      {Array.isArray(messages) && messages.length > 0 ? (
-        <ul>
-          {messages.map((message, index) => (
-            <li key={message.id || index} className="mb-4">
-              <p>
-                <strong>Message {index + 1}:</strong> {message.message || "No content"}
-              </p>
-              <p>{message.sent_at}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No messages found.</p>
-      )}
-    </div>
-  );
-};
+
 
 export default function SendMessageForm({
   assignmentId,
@@ -75,7 +57,7 @@ export default function SendMessageForm({
   const queryClient = useQueryClient();
 
   // Fetch messages using useQuery
-  const { data: messages, isLoading, isError } = useQuery({
+  const { data: messages, isPending, isError } = useQuery({
     queryKey:["messages", messagesIds],
     queryFn:() => fetchMessages(messagesIds),
      enabled: messagesIds.length > 0 
@@ -111,7 +93,7 @@ export default function SendMessageForm({
       />
        <div className="bg-gray-100 p-2 rounded-md shadow-md">
 
-        <MessagesStream messages={messages} />
+        {!isPending&&<ChatScrollArea messages={messages}/>}
        </div>
       <Textarea
         className="bg-gray-100 w-full pr-5 py-2 resize-none"

@@ -278,7 +278,7 @@ export const getAllMessages = async ({ filterByFormula = undefined }: GetAllMess
     const messages: Message[] = [];
 
     return new Promise((resolve, reject) => {
-        base('messages')
+        base('Messages')
             .select(baseSelectOptions)
             .eachPage(
                 function page(records, fetchNextPage) {
@@ -286,8 +286,14 @@ export const getAllMessages = async ({ filterByFormula = undefined }: GetAllMess
                     records.forEach((record) => {
                         const messageRecord = {
                             id: record.getId(),
+                            MessageFrom: record.fields.worker_id,
                             ...record.fields,
                         };
+
+                        // Ensure that MessageFrom contains a single worker_id
+                        if (record.fields.MessageFrom) {
+                            messageRecord.MessageFrom = record.fields.MessageFrom; // Directly assign the single worker_id
+                        }
 
                         messages.push(messageRecord as Message);
                     });
@@ -300,13 +306,14 @@ export const getAllMessages = async ({ filterByFormula = undefined }: GetAllMess
                         console.error(err);
                         reject(err);
                     } else {
-                        // Resolve the promise with the fully populated array.
+                        // Resolve the promise with the fully populated messages array
                         resolve(messages);
                     }
                 }
             );
     });
 };
+
 
 
 export const getMessageById = async (id: string): Promise<Message> => {
