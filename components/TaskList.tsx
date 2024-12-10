@@ -11,23 +11,17 @@ interface TaskListProps {
 
 export default function TaskList({ tasks }: TaskListProps) {
   const [updatedTasks, setUpdatedTasks] = useState(tasks);
-
   const [saving, setSaving] = useState(false);
 
   const handleStatusChange = (taskId: string, newStatus: Task["status"]) => {
-    for (let i = 0; i < updatedTasks.length; i++) {
-      if (updatedTasks[i].id === taskId) {
-        updatedTasks[i].status = newStatus;
-        break;
-      }
-    }
-    setUpdatedTasks([...updatedTasks]);
+    setUpdatedTasks((prevTasks) =>
+      prevTasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task))
+    );
   };
 
   const saveChanges = async () => {
     setSaving(true);
     try {
-      // Send updated tasks to the API
       const response = await fetch("/api/tasks", {
         method: "POST",
         headers: {
@@ -45,77 +39,81 @@ export default function TaskList({ tasks }: TaskListProps) {
       });
     } catch (error) {
       console.error("Error saving tasks:", error);
-      alert("Failed to save changes. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to save changes. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setSaving(false);
     }
   };
 
   const handlePrint = () => {
-    window.print(); // Trigger the browser's print dialog
+    window.print();
   };
 
-  if(tasks.length === 0){
-    return <p>No tasks found.</p>;
+  if (tasks.length === 0) {
+    return <p className="text-gray-600 text-lg">No tasks found.</p>;
   }
 
-
   return (
-    <div>
-      <ul>
+    <div className="bg-gray-50 rounded-lg shadow-md p-6">
+      <ul className="space-y-6">
         {tasks.map((task, index) => (
-          <li key={task.id} className="mb-4">
-            <p>
-              <strong>Task {index + 1}:</strong> {task.title}
-            </p>
-            <p>
+          <li key={task.id} className="bg-white rounded-lg shadow p-4 transition-shadow hover:shadow-lg">
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              Task {index + 1}: {task.title}
+            </h3>
+            <p className="text-gray-600 mb-2">
               Priority:{" "}
-              <strong>
-                <span
-                  className={
-                    task.priority === "Not that important"
-                      ? "text-green-500"
-                      : task.priority === "Important"
-                      ? "text-orange-500"
-                      : task.priority === "Very important"
-                      ? "text-red-600"
-                      : ""
-                  }
-                >
-                  {task.priority}
-                </span>
-              </strong>
+              <span
+                className={`font-medium ${
+                  task.priority === "Not that important"
+                    ? "text-green-600"
+                    : task.priority === "Important"
+                    ? "text-orange-600"
+                    : task.priority === "Very important"
+                    ? "text-red-600"
+                    : "text-gray-600"
+                }`}
+              >
+                {task.priority}
+              </span>
             </p>
-            <p>Status:</p>
-            <InteractiveTask
-              taskId={task.id}
-              currentStatus={task.status}
-              onStatusChange={handleStatusChange}
-            />
-            <p>Description: {task.description}</p>
-            <p>Created at: {task.created_at}</p>
+            <div className="mb-2">
+              <p className="text-gray-600 mb-1">Status:</p>
+              <InteractiveTask
+                taskId={task.id}
+                currentStatus={task.status}
+                onStatusChange={handleStatusChange}
+              />
+            </div>
+            <p className="text-gray-600 mb-2">
+              <span className="font-medium">Description:</span> {task.description}
+            </p>
+            <p className="text-gray-500 text-sm">
+              <span className="font-medium">Created at:</span> {new Date(task.created_at).toLocaleString()}
+            </p>
           </li>
         ))}
       </ul>
 
-      {/* Save Button */}
-      <div className="mt-6 print:hidden">
+      <div className="mt-8 space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-start print:hidden">
         <button
           onClick={saveChanges}
-          className={`px-4 py-2 rounded-lg text-white font-bold ${
-            saving ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+          className={`w-full sm:w-auto px-6 py-3 rounded-lg text-white font-semibold transition-colors duration-200 ${
+            saving
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
           }`}
           disabled={saving}
         >
           {saving ? "Saving..." : "Save Changes"}
         </button>
-      </div>
-
-      {/* Print Button */}
-      <div className="mt-6 print:hidden">
         <button
           onClick={handlePrint}
-          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold"
+          className="w-full sm:w-auto px-6 py-3 rounded-lg text-white font-semibold bg-gray-500 hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50"
         >
           Print
         </button>
@@ -123,11 +121,12 @@ export default function TaskList({ tasks }: TaskListProps) {
 
       <style jsx>{`
         @media print {
-          .print:hidden {
-            display: none;
+          .print\\:hidden {
+            display: none !important;
           }
         }
       `}</style>
     </div>
   );
 }
+

@@ -39,8 +39,6 @@ const fetchMessages = async (ids: string[]) => {
   return response.json();
 };
 
-
-
 export default function SendMessageForm({
   assignmentId,
   workers,
@@ -56,24 +54,23 @@ export default function SendMessageForm({
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const queryClient = useQueryClient();
 
-  // Fetch messages using useQuery
   const { data: messages, isPending, isError } = useQuery({
-    queryKey:["messages", messagesIds],
-    queryFn:() => fetchMessages(messagesIds),
-     enabled: messagesIds.length > 0 
+    queryKey: ["messages", messagesIds],
+    queryFn: () => fetchMessages(messagesIds),
+    enabled: messagesIds.length > 0,
   });
 
   const mutation = useMutation({
     mutationFn: sendMessage,
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ["messages", messagesIds]});
+      queryClient.invalidateQueries({ queryKey: ["messages", messagesIds] });
       onInvalidate();
       setMessage("");
     },
     onError: (error: any) => {
       console.error("Error sending message:", error.message);
     },
-});
+  });
 
   const handleSend = () => {
     if (!message.trim() || !selectedWorker) return;
@@ -86,30 +83,44 @@ export default function SendMessageForm({
   };
 
   return (
-    <div className="relative py-2">
-      <WorkerSelectionComponent
-        workers={workers}
-        onWorkerSelect={(worker) => setSelectedWorker(worker)}
-      />
-       <div className="bg-gray-100 p-2 rounded-md shadow-md">
-
-        {!isPending&&<ChatScrollArea messages={messages}/>}
-       </div>
-      <Textarea
-        className="bg-gray-100 w-full pr-5 py-2 resize-none"
-        placeholder="Type your message here."
-        rows={3}
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <Button
-        variant="default"
-        className="absolute bottom-2 right-2"
-        onClick={handleSend}
-        disabled={mutation.isPending}
-      >
-        {mutation.isPending ? "Sending..." : "Send"}
-      </Button>
+    <div className="bg-gray-50 rounded-lg shadow-md p-4 sm:p-6">
+      <div className="mb-4">
+        <WorkerSelectionComponent
+          workers={workers}
+          onWorkerSelect={(worker) => setSelectedWorker(worker)}
+        />
+      </div>
+      <div className="bg-white rounded-lg shadow-inner p-4 mb-4 h-64 sm:h-80 overflow-hidden">
+        {isPending ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500">Loading messages...</p>
+          </div>
+        ) : isError ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-red-500">Error loading messages. Please try again.</p>
+          </div>
+        ) : (
+          <ChatScrollArea messages={messages} />
+        )}
+      </div>
+      <div className="relative">
+        <Textarea
+          className="w-full pr-24 py-3 px-4 rounded-lg border border-gray-300 focus:border-gray-500 focus:ring focus:ring-gray-200 focus:ring-opacity-50 resize-none transition duration-200 ease-in-out"
+          placeholder="Type your message here."
+          rows={3}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+        <Button
+          variant="default"
+          className="absolute bottom-3 right-3 bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
+          onClick={handleSend}
+          disabled={mutation.isPending || !selectedWorker || !message.trim()}
+        >
+          {mutation.isPending ? "Sending..." : "Send"}
+        </Button>
+      </div>
     </div>
   );
 }
+

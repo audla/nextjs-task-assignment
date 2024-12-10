@@ -1,6 +1,6 @@
 import Airtable from "airtable";
 
-export const base = new Airtable({apiKey: process.env.AIRTABLE_KEY}).base('appazEhgj3jhg8CxF');
+export const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base('appazEhgj3jhg8CxF');
 
 type BaseSelectOption = {
     maxRecords: number,

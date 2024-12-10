@@ -12,37 +12,35 @@ const fetchAssignment = async (id: string) => {
     throw new Error(`Failed to fetch assignment with id ${id}`);
   }
   const assignment = await response.json();
-
-  // Assuming the API already includes tasks and workers or handles it server-side
   return assignment;
 };
 
-export default function AssignmentComponent({ id, tasks, workers }:{id:string, tasks: Task[], workers: Worker[]}) {
+export default function AssignmentComponent({ id, tasks, workers }: { id: string; tasks: Task[]; workers: Worker[] }) {
   const queryClient = useQueryClient();
 
-  const { data: assignment, isPending, isError } = useQuery(
-    {
-      queryKey: ["assignment", id],
-      queryFn: () => fetchAssignment(id),
-      enabled: !!id,
-    }
-  );
-
-  
+  const { data: assignment, isPending, isError } = useQuery({
+    queryKey: ["assignment", id],
+    queryFn: () => fetchAssignment(id),
+    enabled: !!id,
+  });
 
   if (isPending) {
-    return <p>Loading assignment...</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <p className="text-gray-700 text-xl">Loading assignment...</p>
+      </div>
+    );
   }
 
   if (isError || !assignment) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 print:bg-white print:p-0">
-        <div className="bg-white p-8 rounded-md shadow-md max-w-md w-full text-center relative print:shadow-none">
-          <h1 className="text-2xl font-bold text-red-500 mb-6 print:text-black">Error</h1>
-          <p className="text-gray-700">Failed to load assignment.</p>
+        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center relative print:shadow-none">
+          <h1 className="text-2xl font-bold text-gray-800 mb-6 print:text-black">Error</h1>
+          <p className="text-gray-700 mb-6">Failed to load assignment.</p>
           <Link
             href="/"
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full shadow-md text-2xl font-bold print:hidden"
+            className="bg-gray-700 hover:bg-gray-800 text-white px-6 py-3 rounded-full shadow-md text-lg font-medium transition-colors duration-200 ease-in-out print:hidden"
           >
             Home
           </Link>
@@ -52,60 +50,62 @@ export default function AssignmentComponent({ id, tasks, workers }:{id:string, t
   }
 
   return (
-    <div className="bg-gray-900 min-h-screen p-12 pb-24 pt-50 sm:p-24 flex items-start print:bg-white print:p-0">
-      <div className="bg-white min-h-[90vh] max-w-[1100px] w-full mx-auto p-6 rounded-md shadow-xl flex flex-col relative print:shadow-none print:min-h-0">
-        <h1 className="text-red-500 text-4xl font-bold mb-6 print:text-black">Assignment Details</h1>
+    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="p-6 sm:p-8 md:p-10 grid gap-8 md:grid-cols-2">
+            <div>
+              <h1 className="text-gray-800 text-3xl sm:text-4xl font-bold mb-6 print:text-black">Assignment Details</h1>
 
-        <p className="mb-4">
-          <strong>ID:</strong> {assignment.id}
-        </p>
-        <p className="mb-4">
-          <strong>Number:</strong> {assignment.assignment_id}
-        </p>
-        <p className="mb-4">
-          <strong>Title:</strong> {assignment.Titre}
-        </p>
-        <p className="mb-8">
-          <strong>Status:</strong>{" "}
-          <span
-            className={
-              assignment.assignment_status === "TODO"
-                ? "text-red-500 font-bold text-2xl print:text-black print:text-base"
-                : assignment.assignment_status === "DONE"
-                ? "text-green-500 font-bold text-2xl print:text-black print:text-base"
-                : "text-gray-700 print:text-black print:text-base"
-            }
-          >
-            {assignment.assignment_status}
-          </span>
-        </p>
+              <div className="space-y-4">
+                <p className="text-gray-700">
+                  <span className="font-semibold">ID:</span> {assignment.id}
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-semibold">Number:</span> {assignment.assignment_id}
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-semibold">Title:</span> {assignment.Titre}
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-semibold">Status:</span>{" "}
+                  <span
+                    className={`font-semibold ${
+                      assignment.assignment_status === "TODO"
+                        ? "text-red-600"
+                        : assignment.assignment_status === "DONE"
+                        ? "text-green-600"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    {assignment.assignment_status}
+                  </span>
+                </p>
+              </div>
 
-        {assignment.Tasks.length > 0 && (
-          <div>
-            <p className="mb-6">
-              <strong>Number of Tasks:</strong> {tasks?.length}
-            </p>
-            <TaskList tasks={tasks} />
+              {assignment.Tasks.length > 0 && (
+                <div className="mt-8">
+                  <p className="text-gray-700 mb-4">
+                    <span className="font-semibold">Number of Tasks:</span> {tasks?.length}
+                  </p>
+                  <TaskList tasks={tasks} />
+                </div>
+              )}
+
+              
+            </div>
+            <div>
+              <SendMessageForm
+                assignmentId={assignment.id}
+                workers={workers}
+                messagesIds={assignment.Messages}
+                onInvalidate={() => queryClient.invalidateQueries({ queryKey: ["assignment", id] })}
+              />
+            </div>
           </div>
-        )}
-
-        <div className="absolute top-4 right-4 flex space-x-4">
-          <Link
-            href="/"
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full shadow-md text-2xl font-bold print:hidden"
-          >
-            Home
-          </Link>
         </div>
-      </div>
-      <div>
-        <SendMessageForm
-          assignmentId={assignment.id}
-          workers={workers}
-          messagesIds={assignment.Messages}
-          onInvalidate={() => queryClient.invalidateQueries({queryKey:["assignment", id]})}
-        />
       </div>
     </div>
   );
 }
+
