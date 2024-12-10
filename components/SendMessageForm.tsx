@@ -58,7 +58,7 @@ export default function SendMessageForm({
   const { data: messages, isPending, isError } = useQuery({
     queryKey: ["messages", messagesIds],
     queryFn: () => fetchMessages(messagesIds),
-    enabled: messagesIds.length > 0,
+    enabled: messagesIds?.length > 0,
   });
 
   const mutation = useMutation({
