@@ -2,7 +2,7 @@
 import nodemailer from 'nodemailer';
 import { render } from '@react-email/render';
 import { MessageNotification } from '@/components/emails/MessageNotification';
-let aws = require("@aws-sdk/client-ses");
+import aws from '@aws-sdk/client-ses' 
 const ses = new aws.SES({
     credentials: {
         accessKeyId: process.env.AWS_SES_ACCESS_KEY_ID || '',

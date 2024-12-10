@@ -1,8 +1,7 @@
 // components/emails/MessageNotification.tsx
 import { Html, Head, Preview, Body, Container, Heading, Text } from '@react-email/components';
-import { MessageNotificationProps } from '@/types/email';
 
-export const MessageNotification = ({ senderName, assignmentTitle, message }: MessageNotificationProps) => {
+export const MessageNotification = ({ senderName, assignmentTitle, message }: any ) => {
   return (
     <Html>
       <Head />
