@@ -344,11 +344,16 @@ export const deleteMessage = async (id: string): Promise<Message | string> => {
 
 export async function getMessages(messageIds: string[]) {
     const table = base('Messages');
+    // console.log(`Fetching ${messageIds.length} message ids`);
+    
   
     try {
       const records = await table.select({
+        sort: [{ field: 'sent_at', direction: 'asc' }],
         filterByFormula: `OR(${messageIds.map(id => `RECORD_ID()='${id}'`).join(',')})`
       }).all();
+
+        // console.log(`Successfully fetched ${records.length} messages:`);
   
       return records.map(record => ({
         id: record.id,
