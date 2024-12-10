@@ -35,9 +35,6 @@ importers:
       '@react-email/render':
         specifier: ^1.0.3
         version: 1.0.3(react-dom@18.3.1(react@19.0.0))(react@19.0.0)
-      '@sendgrid/mail':
-        specifier: ^8.1.4
-        version: 8.1.4
       '@tanstack/react-query':
         specifier: ^5.61.0
         version: 5.62.3(react@19.0.0)
@@ -920,18 +917,6 @@ packages:
 
   '@selderee/plugin-htmlparser2@0.11.0':
     resolution: {integrity: sha512-P33hHGdldxGabLFjPPpaTxVolMrzrcegejx+0GxjrIb9Zv48D8yAIA/QTDR2dFl7Uz7urX8aX6+5bCZslr+gWQ==}
-
-  '@sendgrid/client@8.1.4':
-    resolution: {integrity: sha512-VxZoQ82MpxmjSXLR3ZAE2OWxvQIW2k2G24UeRPr/SYX8HqWLV/8UBN15T2WmjjnEb5XSmFImTJOKDzzSeKr9YQ==}
-    engines: {node: '>=12.*'}
-
-  '@sendgrid/helpers@8.0.0':
-    resolution: {integrity: sha512-Ze7WuW2Xzy5GT5WRx+yEv89fsg/pgy3T1E3FS0QEx0/VvRmigMZ5qyVGhJz4SxomegDkzXv/i0aFPpHKN8qdAA==}
-    engines: {node: '>= 12.0.0'}
-
-  '@sendgrid/mail@8.1.4':
-    resolution: {integrity: sha512-MUpIZykD9ARie8LElYCqbcBhGGMaA/E6I7fEcG7Hc2An26QJyLtwOaKQ3taGp8xO8BICPJrSKuYV4bDeAJKFGQ==}
-    engines: {node: '>=12.*'}
 
   '@smithy/abort-controller@3.1.9':
     resolution: {integrity: sha512-yiW0WI30zj8ZKoSYNx90no7ugVn3khlyH/z5W8qtKBtVE6awRALbhSG+2SAHA1r6bO/6M9utxYKVZ3PCJ1rWxw==}
@@ -3771,24 +3756,6 @@ snapshots:
     dependencies:
       domhandler: 5.0.3
       selderee: 0.11.0
-
-  '@sendgrid/client@8.1.4':
-    dependencies:
-      '@sendgrid/helpers': 8.0.0
-      axios: 1.7.9
-    transitivePeerDependencies:
-      - debug
-
-  '@sendgrid/helpers@8.0.0':
-    dependencies:
-      deepmerge: 4.3.1
-
-  '@sendgrid/mail@8.1.4':
-    dependencies:
-      '@sendgrid/client': 8.1.4
-      '@sendgrid/helpers': 8.0.0
-    transitivePeerDependencies:
-      - debug
 
   '@smithy/abort-controller@3.1.9':
     dependencies:
