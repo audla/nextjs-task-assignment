@@ -226,10 +226,7 @@ export const getAllAssignments = async ({ filterByFormula = undefined }: GetAllA
 export const getAssignmentById = async (id: string): Promise<Assignment> => {
     return new Promise((res, rej) =>
         base('Assignments').find(id, function(err, record) {
-            // if (err || !record ) { console.error(err); rej(err); }
-            if(err){
-                return rej(err);
-            }
+            if (err || !record ) { console.error(err); rej(err); }
             else{
                 const assignmentRecordFields= {id:record?.id, ...record.fields} as unknown as Assignment
                 res(assignmentRecordFields);
