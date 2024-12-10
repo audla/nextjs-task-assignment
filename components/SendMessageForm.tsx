@@ -54,6 +54,7 @@ export default function SendMessageForm({
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const queryClient = useQueryClient();
 
+
   const { data: messages, isPending, isError } = useQuery({
     queryKey: ["messages", messagesIds],
     queryFn: () => fetchMessages(messagesIds),
@@ -100,7 +101,7 @@ export default function SendMessageForm({
             <p className="text-red-500">Error loading messages. Please try again.</p>
           </div>
         ) : (
-          <ChatScrollArea messages={messages} />
+          <ChatScrollArea messages={messages} workers={workers} />
         )}
       </div>
       <div className="relative">

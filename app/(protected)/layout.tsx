@@ -13,7 +13,7 @@ export default async function RootLayout({
 }) {
   const session = await auth()
 
-  console.log(session)
+  console.log("ICI=============",session)
 
   if(!session || session==null) {
    redirect('/login')

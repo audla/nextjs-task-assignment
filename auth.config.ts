@@ -2,6 +2,16 @@ import bcrypt from 'bcryptjs';
 import axios from 'axios';
 import Credentials from 'next-auth/providers/credentials';
 
+
+export type SessionUser = {
+  id: string;
+  email: string;
+  role: string;
+  firstName?: string;
+  lastName?: string;
+  workerId?: string;
+}
+
 // Define a type for your user object
 export type AirtableUser = {
   id: string;
@@ -10,6 +20,7 @@ export type AirtableUser = {
   password: string;
   firstName?: string;
   lastName?: string;
+  workerId?: string;
 };
 
 const AUDLA_TblUsers = 'tbl0cWBYYUr5MhXbE';
@@ -99,6 +110,7 @@ async function getUser({ email }: { email: string }): Promise<AirtableUser | und
       role: userRecord.Role || 'USER',
       firstName: userRecord.FirstName || '',
       lastName: userRecord.LastName || '',
+      workerId: userRecord.Worker[0] || '',
     };
 
     // console.log('User found:', userPojo);
@@ -143,6 +155,7 @@ export const authConfig = {
             role: user.role,
             firstName: user.firstName,
             lastName: user.lastName,
+            workerId: user.workerId,
           };
         } catch (error) {
           // Log any unexpected errors
@@ -164,6 +177,7 @@ export const authConfig = {
         token.role = user.role;
         token.firstName = user.firstName;
         token.lastName = user.lastName;
+        token.workerId = user.workerId;
       }
       return token;
     },
@@ -173,6 +187,7 @@ export const authConfig = {
       session.user.role = token.role;
       session.user.firstName = token.firstName;
       session.user.lastName = token.lastName;
+      session.user.workerId = token.workerId;
       return session;
     },
   },

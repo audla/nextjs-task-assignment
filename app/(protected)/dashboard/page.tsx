@@ -1,9 +1,13 @@
+import { auth } from "@/auth";
+import { SessionUser } from "@/auth.config";
 import WorkerComponent from "@/components/WorkerComponent";
 import {getAllWorkers } from "@/lib/airtable";
 import React, { Suspense } from "react";
 
 export default async function Home() {
+  const session = await auth() as unknown as {user:SessionUser}
 
+  console.log("ICI AUSSSSSIIII=============",session?.user.workerId)
   const workers = await getAllWorkers({  });
 
 
