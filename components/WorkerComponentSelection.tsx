@@ -21,7 +21,7 @@ export default function WorkerSelectionComponent({
 
   return (
     <div className="bg-gray-100 p-2 rounded-md shadow-md">
-      <h2 className="font-bold text-lg mb-4">Who's writing?</h2>
+      <h2 className="font-bold text-lg mb-4">Who&apos;s writing?</h2>
       <WorkerSelect workers={workers} setActiveWorker={handleWorkerSelect} />
       {activeWorker && (
         <div className="mt-4">

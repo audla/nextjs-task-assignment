@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { getErrorMessage } from "@/lib/utils";
 
 export default function MessageSender() {
   const [message, setMessage] = useState("");
@@ -31,8 +32,8 @@ export default function MessageSender() {
 
       setFeedback({ success: true, error: "" });
       setMessage(""); // Clear the textarea
-    } catch (error: any) {
-      setFeedback({ success: false, error: error.message });
+    } catch (error: unknown) {
+      setFeedback({ success: false, error: getErrorMessage(error) });
     } finally {
       setIsSending(false);
     }

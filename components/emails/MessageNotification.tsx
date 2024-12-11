@@ -1,7 +1,7 @@
 // components/emails/MessageNotification.tsx
 import { Html, Head, Preview, Body, Container, Heading, Text } from '@react-email/components';
 
-export const MessageNotification = ({ senderName, assignmentTitle, message }: any ) => {
+export const MessageNotification = ({ senderName, assignmentTitle, message }:{senderName:string,assignmentTitle:string,message:string} ) => {
   return (
     <Html>
       <Head />
@@ -16,7 +16,7 @@ export const MessageNotification = ({ senderName, assignmentTitle, message }: an
             You have received a new message from <strong>{senderName}</strong> regarding <em>{assignmentTitle}</em>.
           </Text>
           <Text style={{ fontStyle: 'italic', margin: '20px 0', padding: '10px', backgroundColor: '#f3f3f3' }}>
-            "{message}"
+          &quot;{message}&quot;
           </Text>
           <Text>Best regards,</Text>
           <Text>Your App Team</Text>

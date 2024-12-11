@@ -1,4 +1,5 @@
 import Airtable from "airtable";
+import { getErrorMessage } from "./utils";
 
 export const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base('appazEhgj3jhg8CxF');
 
@@ -230,6 +231,9 @@ export const getAssignmentById = async (id: string): Promise<Assignment> => {
             if(err){
                 return rej(err);
             }
+            else if(!record){
+                return rej("No record found");
+            }
             else{
                 const assignmentRecordFields= {id:record?.id, ...record.fields} as unknown as Assignment
                 res(assignmentRecordFields);
@@ -391,8 +395,8 @@ type NewMessage = {
             id: createdRecord.id,
             fields: createdRecord.fields,
         };
-    } catch (error:any) {
+    } catch (error:unknown) {
         console.error('Error creating message:', error);
-        throw new Error(error);
+        throw new Error(getErrorMessage(error));
     }
 }

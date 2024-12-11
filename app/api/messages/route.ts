@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createMessage, getMessages } from "@/lib/airtable";
+import { getErrorMessage } from "@/lib/utils";
 
 
 export async function GET(req: NextRequest) {
@@ -18,9 +19,9 @@ export async function GET(req: NextRequest) {
 
     // Respond with the fetched messages
     return NextResponse.json(messages, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching messages:", error);
-    return NextResponse.json({ error: "Failed to fetch messages", message: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch messages", message: getErrorMessage(error) }, { status: 500 });
   }
 }
 
@@ -38,9 +39,9 @@ export async function POST(req: Request) {
 
     // Respond with the newly created message
     return NextResponse.json(newMessage, { status: 201 });
-  } catch (error:any) {
+  } catch (error:unknown) {
     console.error("Error creating message:", error);
-    return NextResponse.json({ error: "Failed to create message", message:error.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create message", message:getErrorMessage(error) }, { status: 500 });
 
   }
 }

@@ -1,31 +1,33 @@
 import { Suspense } from 'react'
 import ResetPasswordForm from './ResetPasswordForm'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+interface ResetPasswordSearchParams {
+  code?: string;
+}
 
-export default function ResetPassword({
+export default async function ResetPassword({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<ResetPasswordSearchParams>
 }) {
-  const token = searchParams.code as string | undefined
+  const {code:token} = await searchParams;
 
   return (
     <main className='py-10 max-w-md mx-auto'>
-    <Card className='bg-gray-300/20 backdrop-blur-md shadow-xl dark:bg-gray-900 border-transparent'>
+      <Card className='bg-gray-300/20 backdrop-blur-md shadow-xl dark:bg-gray-900 border-transparent'>
         <CardHeader>
-
-      <CardTitle>Reset Your Password</CardTitle>
+          <CardTitle>Reset Your Password</CardTitle>
         </CardHeader>
         <CardContent>
-        <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<div>Loading...</div>}>
             {token ? (
-            <ResetPasswordForm token={token} />
+              <ResetPasswordForm token={token} />
             ) : (
-            <p className="text-red-500">No recovery token found in the URL.</p>
+              <p className="text-red-500">No recovery token found in the URL.</p>
             )}
-        </Suspense>
+          </Suspense>
         </CardContent>
-    </Card>
+      </Card>
     </main>
   )
 }

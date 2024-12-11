@@ -1,25 +1,45 @@
 import bcrypt from 'bcryptjs';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { base } from './airtable';
 
+interface AirtableRecordFields {
+  [key: string]: unknown;
+}
 
-export const getRecordsInEdge = async ({
-  tableId,
-  fieldName,
-  fieldValue,
-  sort = undefined,
-  view = 'Grid view',
-}: {
+interface AirtableRecord {
+  id: string;
+  fields: AirtableRecordFields;
+  createdTime?: string;
+}
+
+interface AirtableListResponse {
+  records: AirtableRecord[];
+}
+
+interface UpdateRecord {
+  id: string;
+  fields: Record<string, unknown>;
+}
+
+interface GetRecordsParams {
   tableId: string;
   fieldName: string;
   fieldValue: string | number;
   sort?: { field: string; direction: 'asc' | 'desc' }[];
   view?: string;
-}): Promise<any[]> => {
-  let recordsData: any[] = [];
+}
+
+export const getRecordsInEdge = async ({
+  tableId,
+  fieldName,
+  fieldValue,
+  sort,
+  view = 'Grid view',
+}: GetRecordsParams): Promise<AirtableRecord[]> => {
+  const recordsData: AirtableRecord[] = [];
 
   try {
-    const params: any = {
+    const params: Record<string, unknown> = {
       view,
       filterByFormula: `{${fieldName}} = "${fieldValue}"`,
     };
@@ -31,8 +51,7 @@ export const getRecordsInEdge = async ({
       }));
     }
 
-    // console.log('Fetching records from Airtable...');
-    const response = await axios.get(
+    const response: AxiosResponse<AirtableListResponse> = await axios.get(
       `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/${tableId}`,
       {
         headers: {
@@ -43,14 +62,13 @@ export const getRecordsInEdge = async ({
     );
 
     const records = response.data.records;
-    records.forEach((record: any) => {
-      const fields = record.fields;
+    records.forEach((record) => {
       recordsData.push({
-        id: record.id, // Airtable record ID
-        ...fields,
+        id: record.id,
+        fields: { ...record.fields },
+        createdTime: record.createdTime,
       });
     });
-    // console.log('Fetched records successfully:', recordsData);
   } catch (error) {
     console.error('Error fetching Airtable records:', error);
   }
@@ -59,9 +77,12 @@ export const getRecordsInEdge = async ({
 };
 
 // Function to update a record in Airtable
-export async function updateRecordsInEdge(table: string, records: { id: string; fields: any }[]): Promise<any | null> {
+export async function updateRecordsInEdge(
+  table: string,
+  records: UpdateRecord[]
+): Promise<AirtableRecord[] | null> {
   try {
-    const response = await axios.patch(
+    const response: AxiosResponse<AirtableListResponse> = await axios.patch(
       `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/${table}`,
       {
         records,
@@ -76,7 +97,6 @@ export async function updateRecordsInEdge(table: string, records: { id: string; 
 
     console.log(response.data);
 
-    // Return the updated records
     return response.data.records;
   } catch (error) {
     console.error(`Error updating records in table ${table}:`, error);
@@ -85,7 +105,7 @@ export async function updateRecordsInEdge(table: string, records: { id: string; 
 }
 
 // Update user record with the Password Reset Code and return the updated record
-export async function updateUserPasswordResetCode(userId: string, resetCode: string) {
+export async function updateUserPasswordResetCode(userId: string, resetCode: string): Promise<AirtableRecord[] | null> {
   try {
     const updatedRecord = await updateRecordsInEdge('Users', [
       {
@@ -95,25 +115,24 @@ export async function updateUserPasswordResetCode(userId: string, resetCode: str
         },
       },
     ]);
-    return updatedRecord; // Return the updated record
+    return updatedRecord;
   } catch (error) {
     console.error(`Error updating Password Reset Code for user ${userId}:`, error);
-    return null; // Return null in case of an error
+    return null;
   }
 }
 
-
 // Function to fetch user by email
-export async function fetchUserByEmail(email: string): Promise<any | null> {
+export async function fetchUserByEmail(email: string): Promise<AirtableRecord | null> {
   try {
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise<AirtableRecord | null>((resolve, reject) => {
       base('Users')
         .select({
           filterByFormula: `{Email} = '${email}'`,
         })
-        .firstPage((records) => {
+        .firstPage((records: AirtableRecord[]) => {
           console.log(records);
-          
+
           if (records.length > 0) {
             resolve(records[0]);
           } else {
@@ -122,8 +141,7 @@ export async function fetchUserByEmail(email: string): Promise<any | null> {
         });
     });
 
-      
-     return promise;
+    return promise;
   } catch (error) {
     console.error(`Error fetching user with email ${email}:`, error);
     return null;
@@ -131,7 +149,7 @@ export async function fetchUserByEmail(email: string): Promise<any | null> {
 }
 
 // Function to fetch user by reset token (PasswordResetCode)
-export async function fetchUserByResetCode(resetCode: string): Promise<any | null> {
+export async function fetchUserByResetCode(resetCode: string): Promise<AirtableRecord | null> {
   try {
     const records = await getRecordsInEdge({
       tableId: 'Users',
@@ -141,27 +159,23 @@ export async function fetchUserByResetCode(resetCode: string): Promise<any | nul
 
     return records.length > 0 ? records[0] : null;
   } catch (error) {
-    console.error(`Error fetching user by reset code:`, error);
+    console.error('Error fetching user by reset code:', error);
     return null;
   }
 }
 
-
-
 // Function to update user password and clear the reset token
-export async function updateUserPassword(userId: string, newPassword: string) {
+export async function updateUserPassword(userId: string, newPassword: string): Promise<AirtableRecord[] | null> {
   try {
-    // Hash the password using bcryptjs
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
-    // Update the user record with the hashed password and clear the reset token
     const updatedRecord = await updateRecordsInEdge('Users', [
       {
         id: userId,
         fields: {
-          Password: hashedPassword, // Store the hashed password
-          PasswordResetCode: '', // Clear the reset token after successful password update
+          Password: hashedPassword,
+          PasswordResetCode: '',
         },
       },
     ]);
@@ -172,22 +186,21 @@ export async function updateUserPassword(userId: string, newPassword: string) {
   }
 }
 
-
-export async function resetPassword(token: string) {
+export async function resetPassword(token: string): Promise<{ success: boolean; message: string; userId?: string }> {
   try {
-    // Fetch the user by the reset token from Airtable
     const userRecord = await fetchUserByResetCode(token);
 
     if (!userRecord) {
       return { success: false, message: 'Invalid or expired recovery token. Please request a new password reset.' };
     }
 
-    // Return success message and pass userId
-    return { success: true, message: 'Account recovered successfully. You can now set a new password.', userId: userRecord.id };
-  } catch (error: any) {
+    return {
+      success: true,
+      message: 'Account recovered successfully. You can now set a new password.',
+      userId: userRecord.id,
+    };
+  } catch (error) {
     console.error('Error recovering account:', error);
     return { success: false, message: 'Error recovering account. Please try again or contact support.' };
   }
 }
-
-

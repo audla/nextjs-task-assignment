@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { base, deleteAssignment, deleteTasks, getAllAssignments, getAssignmentById } from '@/lib/airtable';
+import { NextResponse } from 'next/server';
+import {  deleteAssignment, deleteTasks, getAssignmentById } from '@/lib/airtable';
 import { getErrorMessage } from '@/lib/utils';
 
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  console.log('DELETE request received', request.json());
   const assignmentId = (await params).id; // Extract assignment ID from params
 
   try {
@@ -69,8 +70,8 @@ export async function GET(  request: Request,
 
     // Respond with the fetched messages
     return NextResponse.json(messages, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching messages:", error);
-    return NextResponse.json({ error: "Failed to fetch messages", message: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch messages", message: getErrorMessage(error) }, { status: 500 });
   }
 }

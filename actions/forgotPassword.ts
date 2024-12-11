@@ -30,9 +30,9 @@ export async function requestPasswordReset(email: string, locale:'en'|'fr') {
             fieldValue: email,
           })
 
-          const userRecord = userRecords[0];
+          const userRecord = userRecords[0] as unknown as {id:string,FirstName:string,LastName:string} | null;
 
-        if (userRecord[0]) {
+        if (!userRecord) {
             return { success: false, message: 'User with the provided email not found.' };
         }
 

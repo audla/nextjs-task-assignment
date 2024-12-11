@@ -13,7 +13,7 @@ export default function ForgotPasswordForm() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit:any = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setMessage('')
     setError('')
@@ -28,6 +28,7 @@ export default function ForgotPasswordForm() {
         setError(result.message)
       }
     } catch (error) {
+      console.error('An unexpected error occurred:', error)
       setError('An unexpected error occurred. Please try again.')
     } finally {
       setIsLoading(false)
