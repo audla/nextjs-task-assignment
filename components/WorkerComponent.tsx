@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import AssignmentsList from './WorkersList';
 import { toast } from '@/hooks/use-toast';
+import { SessionUser } from '@/auth.config';
 
 const fetchAssignments = async (assignmentIds: string[]) => {
   const response = await fetch('/api/assignments', {
@@ -39,8 +40,7 @@ const deleteAssignmentAndTasks = async (assignmentId: string) => {
   return await response.json();
 };
 
-export default function WorkerComponent({ workers }: { workers: Worker[] }) {
-  const [activeWorker, setActiveWorker] = useState<Worker | null>(workers[0] || null);
+export default function WorkerComponent({ workers, activeWorker }: { workers: Worker[], activeWorker:Worker }) {
   const queryClient = useQueryClient();
 
   const { isLoading, error, data: assignmentsData } = useQuery({
@@ -77,7 +77,7 @@ export default function WorkerComponent({ workers }: { workers: Worker[] }) {
         <div>No workers found</div>
       ) : (
         <>
-          <WorkerSelect workers={workers} setActiveWorker={setActiveWorker}/>
+          {/* <WorkerSelect workers={workers} setActiveWorker={setActiveWorker}/> */}
           {activeWorker && (
             <div>
               <h2>Worker: {activeWorker.worker_id}</h2>
