@@ -40,7 +40,7 @@ const deleteAssignmentAndTasks = async (assignmentId: string) => {
   return await response.json();
 };
 
-export default function WorkerComponent({ workers, activeWorker }: { workers: Worker[], activeWorker:Worker }) {
+export default function WorkerComponent({ workers, activeWorker }: { workers: Worker[], activeWorker:Worker|undefined }) {
   const queryClient = useQueryClient();
 
   const { isLoading, error, data: assignmentsData } = useQuery({
