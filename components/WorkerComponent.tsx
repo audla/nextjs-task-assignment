@@ -1,9 +1,8 @@
 'use client';
 
-import { Assignment, Worker } from '@/lib/airtable';
+import {  Worker } from '@/lib/airtable';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import AssignmentsList from './WorkersList';
 import { toast } from '@/hooks/use-toast';

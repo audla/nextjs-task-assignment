@@ -1,81 +1,81 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/catalyst/button'
-import { Input } from '@/components/catalyst/input';
-import { updatePassword } from '@/actions/resetPassword';
+import { Input } from '@/components/catalyst/input'
+import { updatePassword } from '@/actions/resetPassword'
 
 export default function ResetPasswordForm({ token }: { token: string }) {
-  const [parentId, setParentId] = useState(''); // Store the parentId here
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isRecovered, setIsRecovered] = useState(false);
+  const router = useRouter() // Next.js router for navigation
+  const [parentId, setParentId] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isRecovered, setIsRecovered] = useState(false)
 
   useEffect(() => {
     const recoverAccount = async () => {
-      setIsLoading(true);
+      setIsLoading(true)
       try {
-        // Call the API route to reset the password
         const response = await fetch('/api/reset-password', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ token }), // Send token in request body
-        });
+          body: JSON.stringify({ token }),
+        })
 
-        const result = await response.json();
+        const result = await response.json()
         if (result.success) {
-          setIsRecovered(true);
-          setParentId(result.parentId); // Save the parentId from the result
-          setMessage(result.message);
+          setIsRecovered(true)
+          setParentId(result.parentId)
+          setMessage(result.message)
         } else {
-          setError(result.message);
+          setError(result.message)
         }
-      } catch (error) {
-        setError('Error recovering account. Please try again later.');
+      } catch {
+        setError('Error recovering account. Please try again later.')
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false);
-    };
+    }
 
-    recoverAccount();
-  }, [token]);
+    recoverAccount()
+  }, [token])
 
   const handlePasswordReset = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setMessage('');
-    setError('');
-    setIsLoading(true);
+    event.preventDefault()
+    setMessage('')
+    setError('')
+    setIsLoading(true)
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      setIsLoading(false);
-      return;
+      setError('Passwords do not match.')
+      setIsLoading(false)
+      return
     }
 
     try {
-      // You can add your password update logic here, similar to how you handle the reset logic
-      const result = await updatePassword(parentId, password); // Pass parentId and password
+      const result = await updatePassword(parentId, password)
       if (result.success) {
-        setMessage(result.message);
-        setPassword('');
-        setConfirmPassword('');
+        // Redirect immediately after a successful update
+        router.replace('/dashboard') // Use replace to avoid adding to browser history
       } else {
-        setError(result.message);
+        setError(result.message)
       }
-    } catch (error) {
-      setError('An unexpected error occurred. Please try again or contact support.');
+    } catch {
+      setError('An unexpected error occurred. Please try again or contact support.')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   if (isLoading) {
-    return <div className="text-center">Processing your request...</div>;
+    return <div className="text-center">Processing your request...</div>
   }
 
   if (error && !isRecovered) {
@@ -88,7 +88,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
           </Link>
         </Button>
       </div>
-    );
+    )
   }
 
   if (!isRecovered) {
@@ -99,7 +99,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
           Request a new password reset
         </Link>
       </div>
-    );
+    )
   }
 
   return (
@@ -142,5 +142,5 @@ export default function ResetPasswordForm({ token }: { token: string }) {
       {message && <p className="text-green-500">{message}</p>}
       {error && <p className="text-red-500">{error}</p>}
     </form>
-  );
+  )
 }

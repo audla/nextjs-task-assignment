@@ -5,8 +5,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import WorkerSelectionComponent from "@/components/WorkerComponentSelection";
-import { Message, Worker } from "@/lib/airtable";
+import {  Worker } from "@/lib/airtable";
 import { ChatScrollArea } from "./chat-scroll-area";
+import { getErrorMessage } from "@/lib/utils";
 
 const sendMessage = async ({
   content,
@@ -68,8 +69,8 @@ export default function SendMessageForm({
       onInvalidate();
       setMessage("");
     },
-    onError: (error: any) => {
-      console.error("Error sending message:", error.message);
+    onError: (error: unknown) => {
+      console.error("Error sending message:", getErrorMessage(error));
     },
   });
 

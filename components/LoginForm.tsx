@@ -1,7 +1,6 @@
 'use client';
 
 import { useActionState } from 'react';
-import {useFormStatus} from 'react-dom';
 import { authenticate } from '@/lib/actions';
 import { Button } from './catalyst/button';
 import { ArrowRight, Loader2, MessageCircleWarningIcon } from 'lucide-react';
@@ -11,12 +10,10 @@ import { Text } from './catalyst/text';
 import { Link } from './catalyst/link';
 import AudlaLogo from './logo';
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
+function SubmitButton({ isPending }: { isPending: boolean }) {
   return (
-    <Button className="mt-4 w-full" aria-disabled={pending} type="submit">
-      {pending ? (
+    <Button className="mt-4 w-full" aria-disabled={isPending} type="submit">
+      {isPending ? (
         <>
           Connexion en cours <Loader2 className="ml-auto h-5 w-5 animate-spin text-gray-50" />
         </>
@@ -31,7 +28,7 @@ function SubmitButton() {
 
 export default function LoginForm() {
   const [errorMessage, action, isPending] = useActionState(authenticate, undefined);
-
+  
   return (
     <main className="space-y-3 border border-gray-400/20 bg-gray-300/20 backdrop-blur-md shadow-xl dark:bg-gray-900 px-8 py-8 flex flex-col gap-5 rounded-xl max-w-[90vw] lg:max-w-lg min-w-[450px] p-6 mx-auto my-auto">
       <form action={action} className="">
@@ -63,7 +60,7 @@ export default function LoginForm() {
             />
           </div>
 
-          <SubmitButton />
+          <SubmitButton isPending={isPending} />
           {errorMessage && (
             <div
               className="flex pt-5 items-end space-x-1"
@@ -79,4 +76,3 @@ export default function LoginForm() {
     </main>
   );
 }
-
