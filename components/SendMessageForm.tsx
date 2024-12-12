@@ -45,14 +45,15 @@ export default function SendMessageForm({
   workers,
   messagesIds,
   onInvalidate,
+  selectedWorker,
 }: {
   assignmentId: string;
   workers: Worker[];
   messagesIds: string[];
   onInvalidate: () => void;
+  selectedWorker: Worker | undefined;
 }) {
   const [message, setMessage] = useState("");
-  const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const queryClient = useQueryClient();
 
 
@@ -86,12 +87,13 @@ export default function SendMessageForm({
 
   return (
     <div className="bg-gray-50 rounded-lg shadow-md p-4 sm:p-6">
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <WorkerSelectionComponent
           workers={workers}
           onWorkerSelect={(worker) => setSelectedWorker(worker)}
         />
-      </div>
+      </div> */}
+      <div className="text-2xl">Messages</div>
       <div className="bg-white rounded-lg shadow-inner p-4 mb-4 h-64 sm:h-80 overflow-hidden">
         {isPending ? (
           <div className="flex items-center justify-center h-full">

@@ -15,7 +15,7 @@ const fetchAssignment = async (id: string) => {
   return assignment;
 };
 
-export default function AssignmentComponent({ id, tasks, workers }: { id: string; tasks: Task[]; workers: Worker[] }) {
+export default function AssignmentComponent({ id, tasks, workers, activeWorker }: { id: string; tasks: Task[]; workers: Worker[]; activeWorker: Worker | undefined}) {
   const queryClient = useQueryClient();
 
   const { data: assignment, isPending, isError } = useQuery({
@@ -98,6 +98,7 @@ export default function AssignmentComponent({ id, tasks, workers }: { id: string
               <SendMessageForm
                 assignmentId={assignment.id}
                 workers={workers}
+                selectedWorker={activeWorker}
                 messagesIds={assignment.Messages}
                 onInvalidate={() => queryClient.invalidateQueries({ queryKey: ["assignment", id] })}
               />
