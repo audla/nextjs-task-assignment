@@ -6,9 +6,8 @@ import React, { Suspense } from "react";
 
 export default async function Home() {
   const session = await auth() as unknown as {user:SessionUser}
-
-  console.log("ICI AUSSSSSIIII=============",session?.user.workerId)
   const workers = await getAllWorkers({  });
+  const activeWorker = workers.find((worker) => worker.id === session?.user.workerId);
 
 
   return (
@@ -18,7 +17,7 @@ export default async function Home() {
             Workers
            </h2>
            <Suspense fallback={<div>Loading...</div>}>
-              <WorkerComponent workers={workers} />
+              <WorkerComponent workers={workers} activeWorker={activeWorker} />
            </Suspense>         
           
       </main>
