@@ -8,6 +8,7 @@ export async function POST(req: Request) {
   try {
     // Parse the incoming request body
     const  {tasks} = await req.json();
+
     const updatedTasks = tasks.map((task:any) => {
       const id = task.id;
       delete task.id;
