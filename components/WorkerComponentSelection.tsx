@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Worker } from "@/lib/airtable"; // Adjust import path
-import { WorkerSelect } from "@/components/WorkerComponent";
+import { WorkerSelect } from "@/components/RolesDashboards";
 
 export default function WorkerSelectionComponent({
   workers,

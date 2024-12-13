@@ -1,12 +1,11 @@
 'use client';
 
 import {  Worker } from '@/lib/airtable';
-import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import AssignmentsList from './WorkersList';
 import { toast } from '@/hooks/use-toast';
-import { SessionUser } from '@/auth.config';
+import { useState } from 'react';
 
 const fetchAssignments = async (assignmentIds: string[]) => {
   const response = await fetch('/api/assignments', {
@@ -40,7 +39,7 @@ const deleteAssignmentAndTasks = async (assignmentId: string) => {
   return await response.json();
 };
 
-export default function WorkerComponent({ workers, activeWorker }: { workers: Worker[], activeWorker:Worker|undefined }) {
+export function WorkerComponent({ workers, activeWorker }: { workers: Worker[], activeWorker:Worker|undefined }) {
   const queryClient = useQueryClient();
 
   const { isLoading, error, data: assignmentsData } = useQuery({
@@ -73,6 +72,9 @@ export default function WorkerComponent({ workers, activeWorker }: { workers: Wo
 
   return (
     <div>
+      <h2 className= "text-black font-[family-name:var(--font-geist-sans)] font-bold text-2xl">
+        Vue workforce
+        </h2>
       {!workers.length ? (
         <div>No workers found</div>
       ) : (
@@ -97,18 +99,80 @@ export default function WorkerComponent({ workers, activeWorker }: { workers: Wo
     </div>
   );
 }
+export function ManagerComponent({ workers, activeWorker }: { workers: Worker[], activeWorker:Worker|undefined }) {
+  const queryClient = useQueryClient();
+
+  const [_activeWorker, setActiveWorker] = useState<Worker | undefined>(activeWorker);
+
+  const { isLoading, error, data: assignmentsData } = useQuery({
+    queryKey: ['assignments', _activeWorker?.Assignments || []],
+    queryFn: () => fetchAssignments(_activeWorker?.Assignments || []),
+    enabled: !!_activeWorker,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteAssignmentAndTasks,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assignments', _activeWorker?.Assignments || []] });
+      toast({
+        title: "Changes saved successfully!",
+        description: "Nous avons enregistré les modifications.",
+      });
+    },
+    onError: (error: Error) => {
+      console.error('Error deleting assignment:', error);
+      toast({
+        title: "Error!",
+        description: "Nous avons rencontre une erreur.",
+      });
+    },
+  });
+
+  const handleDelete = (assignmentId: string) => {
+    deleteMutation.mutate(assignmentId);
+  };
+
+  return (
+    <div>
+      <h2 className= "text-black font-[family-name:var(--font-geist-sans)] font-bold text-2xl">
+        Vue workforce
+        </h2>
+      {!workers.length ? (
+        <div>No workers found</div>
+      ) : (
+        <>
+          <WorkerSelect workers={workers} setActiveWorker={setActiveWorker}/>
+          {_activeWorker && (
+            <div>
+              <h2>Worker: {_activeWorker.worker_id}</h2>
+              <h3>Hourly rate: ${_activeWorker.hourly_rate}</h3>
+              <h3>Assignments for this worker:</h3>
+              {isLoading ? (
+                <p>Loading assignments...</p>
+              ) : error ? (
+                <p>Error fetching assignments: {(error as Error).message}</p>
+              ) : 
+                  <AssignmentsList assignments={assignmentsData || []} onDelete={handleDelete} />
+                  }
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
 
 export function WorkerSelect({
   workers,
   setActiveWorker,
 }: {
   workers: Worker[];
-  setActiveWorker: (workers: Worker | null) => void;
+  setActiveWorker: (workers: Worker | undefined) => void;
 }) {
   // When a new value is selected from the dropdown
   const handleWorkerChange = (value: string) => {
     // Find the worker object that matches the selected value (worker_id)
-    const selectedWorker = workers.find((worker) => worker.worker_id === value) || null;
+    const selectedWorker = workers.find((worker) => worker.worker_id === value) || undefined;
     setActiveWorker(selectedWorker); // Set the selected worker in the parent component
   };
   return (
