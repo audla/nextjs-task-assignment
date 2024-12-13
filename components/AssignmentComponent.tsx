@@ -5,6 +5,7 @@ import Link from "next/link";
 import TaskList from "@/components/TaskList";
 import SendMessageForm from "@/components/SendMessageForm";
 import { Task, Worker } from "@/lib/airtable";
+import React from "react";
 
 const fetchAssignment = async (id: string) => {
   const response = await fetch(`/api/assignments/${id}`);
@@ -15,7 +16,17 @@ const fetchAssignment = async (id: string) => {
   return assignment;
 };
 
-export default function AssignmentComponent({ id, tasks, workers, activeWorker }: { id: string; tasks: Task[]; workers: Worker[]; activeWorker: Worker | undefined}) {
+export default function AssignmentComponent({
+  id,
+  tasks,
+  workers,
+  activeWorker,
+}: {
+  id: string;
+  tasks: Task[];
+  workers: Worker[];
+  activeWorker: Worker | undefined;
+}) {
   const queryClient = useQueryClient();
 
   const { data: assignment, isPending, isError } = useQuery({
@@ -23,6 +34,32 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
     queryFn: () => fetchAssignment(id),
     enabled: !!id,
   });
+
+  const handleTimeUpdate = async (timeWorked: number) => {
+    try {
+      const response = await fetch("/api/update-time", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          assignmentId: id,
+          timeWorked,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        alert("Time worked updated successfully!");
+        queryClient.invalidateQueries({ queryKey: ["assignment", id] });
+      } else {
+        alert("Failed to update time worked.");
+      }
+    } catch (error) {
+      console.error("Error updating time worked:", error);
+      alert("An error occurred while updating time worked.");
+    }
+  };
 
   if (isPending) {
     return (
@@ -55,7 +92,9 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="p-6 sm:p-8 md:p-10 grid gap-8 md:grid-cols-2">
             <div>
-              <h1 className="text-gray-800 text-3xl sm:text-4xl font-bold mb-6 print:text-black">Assignment Details</h1>
+              <h1 className="text-gray-800 text-3xl sm:text-4xl font-bold mb-6 print:text-black">
+                Assignment Details
+              </h1>
 
               <div className="space-y-4">
                 <p className="text-gray-700">
@@ -91,8 +130,6 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
                   <TaskList tasks={tasks} />
                 </div>
               )}
-
-              
             </div>
             <div>
               <SendMessageForm
@@ -100,7 +137,9 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
                 workers={workers}
                 selectedWorker={activeWorker}
                 messagesIds={assignment.Messages}
-                onInvalidate={() => queryClient.invalidateQueries({ queryKey: ["assignment", id] })}
+                onInvalidate={() =>
+                  queryClient.invalidateQueries({ queryKey: ["assignment", id] })
+                }
               />
             </div>
           </div>
@@ -109,4 +148,3 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
     </div>
   );
 }
-
