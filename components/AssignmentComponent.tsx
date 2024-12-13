@@ -60,7 +60,7 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
 
               <div className="space-y-4">
               <div className="mb-6 flex justify-center">
-                 <PercentDonutChart assignment={assignment.CompletedPercent} />
+                 <PercentDonutChart percent={assignment.CompletedPercent} />
                </div>
                 <p className="text-gray-700">
                   <span className="font-semibold">ID:</span> {assignment.id}

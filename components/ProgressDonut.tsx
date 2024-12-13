@@ -6,11 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Assignment } from "@/lib/airtable"
 
 interface PercentDonutChartProps {
-    assignment: number;
+    percent: number;
 }
 
-export default function PercentDonutChart({assignment}:PercentDonutChartProps) {
-  const percent = assignment * 100
+export default function PercentDonutChart({percent}:PercentDonutChartProps) {
+  percent = Math.round(percent * 100)
   
   const data = [
     { name: "Complete", value: percent },
@@ -19,7 +19,7 @@ export default function PercentDonutChart({assignment}:PercentDonutChartProps) {
 
   const COLORS = ["hsl(var(--primary))", "hsl(var(--muted))"]
 
-  console.log("Assignment prop received:", assignment);
+  console.log("Assignment prop received:", percent);
 
   return (
     <Card className="w-full max-w-md">
