@@ -32,9 +32,19 @@ export default function TaskList({ tasks }: TaskListProps) {
   };
 
   const saveChanges = async () => {
+    // Check if any task has ActualWorkTime of 0
+    const tasksWithZeroTime = updatedTasks.filter((task) => task.ActualWorkTime === 0);
+
+    if (tasksWithZeroTime.length > 0) {
+      toast({
+        title: "Time Worked Missing",
+        description: "Please enter the amount of time worked on all tasks before saving.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSaving(true);
-    console.log("Saving changes...", updatedTasks);
-    
     try {
       const response = await fetch("/api/save-time-worked", {
         method: "POST",
@@ -125,7 +135,7 @@ export default function TaskList({ tasks }: TaskListProps) {
                 <span className="font-medium">Description:</span> {task.description}
               </p>
             </li>
-          )
+          );
         })}
       </ul>
 
@@ -145,4 +155,3 @@ export default function TaskList({ tasks }: TaskListProps) {
     </div>
   );
 }
-
