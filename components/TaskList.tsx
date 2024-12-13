@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Task } from "@/lib/airtable";
+import InteractiveTask from "@/components/InteractiveTask";
 
 interface TaskListProps {
   tasks: Task[];
@@ -17,6 +18,15 @@ export default function TaskList({ tasks }: TaskListProps) {
     setUpdatedTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === taskId ? { ...task, ActualWorkTime: newTimeWorked } : task
+      )
+    );
+  };
+
+  // Handle status change
+  const handleStatusChange = (taskId: string, newStatus: Task["status"]) => {
+    setUpdatedTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, status: newStatus } : task
       )
     );
   };
@@ -84,6 +94,15 @@ export default function TaskList({ tasks }: TaskListProps) {
               </h3>
 
               <p className="text-gray-600 mb-2">Priority: {task.priority}</p>
+
+              <div className="mb-2">
+                <p className="text-gray-600 mb-1">Status:</p>
+                <InteractiveTask
+                  taskId={task.id}
+                  currentStatus={task.status}
+                  onStatusChange={handleStatusChange}
+                />
+              </div>
 
               <div className="mb-2">
                 <p className="text-gray-600 mb-1">Time Worked:</p>
