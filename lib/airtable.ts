@@ -179,6 +179,7 @@ export type Assignment = {
     Messages: string[];
     WorkerFirstName: string;
     WorkerLastName: string;
+    CompletedPercent: string;
 };
 
 export const getAllAssignments = async ({ filterByFormula = undefined }: GetAllAssignmentsParams): Promise<Assignment[]> => {

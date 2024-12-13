@@ -149,14 +149,7 @@ export const authConfig = {
           }
 
           // Return the user object if the credentials are valid
-          return {
-            id: user.id,
-            email: user.email,
-            role: user.role,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            workerId: user.workerId,
-          };
+          return user;
         } catch (error) {
           // Log any unexpected errors
           console.error('Error during authorization:', error);
@@ -172,22 +165,12 @@ export const authConfig = {
   callbacks: {
     async jwt({ token, user }:any) {
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.role = user.role;
-        token.firstName = user.firstName;
-        token.lastName = user.lastName;
-        token.workerId = user.workerId;
+        token = user;
       }
       return token;
     },
     async session({ session, token }:any) {
-      session.user.id = token.id;
-      session.user.email = token.email;
-      session.user.role = token.role;
-      session.user.firstName = token.firstName;
-      session.user.lastName = token.lastName;
-      session.user.workerId = token.workerId;
+      session.user = token;
       return session;
     },
   },
