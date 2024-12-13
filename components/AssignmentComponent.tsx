@@ -5,6 +5,7 @@ import Link from "next/link";
 import TaskList from "@/components/TaskList";
 import SendMessageForm from "@/components/SendMessageForm";
 import { Task, Worker } from "@/lib/airtable";
+import  PercentDonutChart  from "./ProgressDonut";
 
 const fetchAssignment = async (id: string) => {
   const response = await fetch(`/api/assignments/${id}`);
@@ -58,6 +59,9 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
               <h1 className="text-gray-800 text-3xl sm:text-4xl font-bold mb-6 print:text-black">Assignment Details</h1>
 
               <div className="space-y-4">
+              <div className="mb-6 flex justify-center">
+                 <PercentDonutChart assignment={assignment.CompletedPercent} />
+               </div>
                 <p className="text-gray-700">
                   <span className="font-semibold">ID:</span> {assignment.id}
                 </p>
