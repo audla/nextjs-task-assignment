@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 
 interface TimeSliderProps {
-  onSave: (timeWorked: number) => void; // Function to call when saving the time
+  onSave: (ActualWorkTime: number) => void; // Function to call when saving the time
 }
 
 const TimeSlider: React.FC<TimeSliderProps> = ({ onSave }) => {

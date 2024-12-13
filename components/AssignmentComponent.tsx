@@ -35,7 +35,7 @@ export default function AssignmentComponent({
     enabled: !!id,
   });
 
-  const handleTimeUpdate = async (timeWorked: number) => {
+  const handleTimeUpdate = async (ActualWorkTime: number) => {
     try {
       const response = await fetch("/api/update-time", {
         method: "POST",
@@ -44,7 +44,7 @@ export default function AssignmentComponent({
         },
         body: JSON.stringify({
           assignmentId: id,
-          timeWorked,
+          ActualWorkTime,
         }),
       });
 

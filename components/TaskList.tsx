@@ -16,13 +16,15 @@ export default function TaskList({ tasks }: TaskListProps) {
   const handleTimeWorkedChange = (taskId: string, newTimeWorked: number) => {
     setUpdatedTasks((prevTasks) =>
       prevTasks.map((task) =>
-        task.id === taskId ? { ...task, timeWorked: newTimeWorked } : task
+        task.id === taskId ? { ...task, ActualWorkTime: newTimeWorked } : task
       )
     );
   };
 
   const saveChanges = async () => {
     setSaving(true);
+    console.log("Saving changes...", updatedTasks);
+    
     try {
       const response = await fetch("/api/save-time-worked", {
         method: "POST",
@@ -51,6 +53,18 @@ export default function TaskList({ tasks }: TaskListProps) {
     }
   };
 
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours}h ${minutes}m`;
+  };
+
+  const getMaxSliderValue = (currentValue: number) => {
+    const baseMax = 8 * 3600; // 8 hours in seconds
+    const dynamicMax = Math.max(baseMax, currentValue * 2);
+    return Math.min(dynamicMax, 24 * 3600); // Cap at 24 hours
+  };
+
   if (tasks.length === 0) {
     return <p className="text-gray-600 text-lg">No tasks found.</p>;
   }
@@ -58,39 +72,42 @@ export default function TaskList({ tasks }: TaskListProps) {
   return (
     <div className="bg-gray-50 rounded-lg shadow-md p-6">
       <ul className="space-y-6">
-        {updatedTasks.map((task) => (
-          <li
-            key={task.id}
-            className="bg-white rounded-lg shadow p-4 transition-shadow hover:shadow-lg"
-          >
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              {task.title}
-            </h3>
+        {updatedTasks.map((task) => {
+          const maxSliderValue = getMaxSliderValue(task.ActualWorkTime || 0);
+          return (
+            <li
+              key={task.id}
+              className="bg-white rounded-lg shadow p-4 transition-shadow hover:shadow-lg"
+            >
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                {task.title}
+              </h3>
 
-            <p className="text-gray-600 mb-2">Priority: {task.priority}</p>
+              <p className="text-gray-600 mb-2">Priority: {task.priority}</p>
 
-            <div className="mb-2">
-              <p className="text-gray-600 mb-1">Time Worked:</p>
-              <input
-                type="range"
-                min={0}
-                max={480} // Example max value: 480 minutes (8 hours)
-                value={task.ActualWorkTime || 0}
-                onChange={(e) =>
-                  handleTimeWorkedChange(task.id, parseInt(e.target.value, 10))
-                }
-                className="w-full"
-              />
-              <p className="text-gray-600 text-sm mt-1">
-                {task.ActualWorkTime || 0} minutes worked
+              <div className="mb-2">
+                <p className="text-gray-600 mb-1">Time Worked:</p>
+                <input
+                  type="range"
+                  min={0}
+                  max={maxSliderValue}
+                  value={task.ActualWorkTime || 0}
+                  onChange={(e) =>
+                    handleTimeWorkedChange(task.id, parseInt(e.target.value, 10))
+                  }
+                  className="w-full"
+                />
+                <p className="text-gray-600 text-sm mt-1">
+                  {formatTime(task.ActualWorkTime || 0)} worked
+                </p>
+              </div>
+
+              <p className="text-gray-600 mb-2">
+                <span className="font-medium">Description:</span> {task.description}
               </p>
-            </div>
-
-            <p className="text-gray-600 mb-2">
-              <span className="font-medium">Description:</span> {task.description}
-            </p>
-          </li>
-        ))}
+            </li>
+          )
+        })}
       </ul>
 
       <div className="mt-8 space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-start">
@@ -109,3 +126,4 @@ export default function TaskList({ tasks }: TaskListProps) {
     </div>
   );
 }
+

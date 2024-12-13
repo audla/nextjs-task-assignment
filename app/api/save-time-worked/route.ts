@@ -7,31 +7,23 @@ const TABLE_ID = "tbleQE8E49ShFF5Te"
 export async function POST(req: Request) {
   try {
     // Parse the incoming request body
-    const { taskId, timeWorked } = await req.json();
-    console.log("Received data:", { taskId, timeWorked });
-
-    // Validation
-    if (!taskId || typeof taskId !== 'string') {
-      console.error("Invalid taskId:", taskId);
-      return NextResponse.json({ error: "Invalid or missing taskId" }, { status: 400 });
-    }
-    if (timeWorked === undefined || typeof timeWorked !== 'number' || timeWorked <= 0) {
-      console.error("Invalid timeWorked:", timeWorked);
-      return NextResponse.json({ error: "Invalid or missing timeWorked" }, { status: 400 });
-    }
-
-    // Update the record in Airtable
-    const update = {
-      id: taskId,
-      fields: {
-        ActualWorkTime: timeWorked, // Directly update the TotalTimeWorked field
-      },
-    };
-
-    console.log("Prepared update for Airtable:", update);
+    const  {tasks} = await req.json();
+    const updatedTasks = tasks.map((task:any) => {
+      const id = task.id;
+      delete task.id;
+      delete task.created_at;
+      delete task.date_heure_lastModified;
+      delete task.TaskDescription;
+      return {
+        id,
+        fields: {
+          ...task,
+        },
+      }
+  });
 
     // Update the record in Airtable
-    const result = await base(TABLE_ID).update([update]);
+    const result = await base(TABLE_ID).update(updatedTasks);
 
     console.log("Airtable response:", result);
 
