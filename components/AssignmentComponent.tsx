@@ -92,7 +92,7 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
                   <p className="text-gray-700 mb-4">
                     <span className="font-semibold">Number of Tasks:</span> {tasks?.length}
                   </p>
-                  <TaskList tasks={tasks} assignmentId={assignment} />
+                  <TaskList tasks={tasks} assignmentId={id} />
                 </div>
               )}
 
