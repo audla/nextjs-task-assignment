@@ -36,10 +36,7 @@ export default function TaskList({ tasks, assignmentId }: TaskListProps) {
       if (!response.ok) {
         throw new Error("Failed to save tasks to Airtable");
       }
-       console.log(queryClient.getQueryData(["assignment", assignmentId]));
        queryClient.invalidateQueries({ queryKey: ["assignment", assignmentId] });
-       console.log("Query invalidated:", queryClient.getQueryData(["assignment", assignmentId]));
-
       toast({
         title: "Changes saved successfully!",
         description: "Nous avons enregistré les modifications.",
