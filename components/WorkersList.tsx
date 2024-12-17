@@ -14,6 +14,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { EditDrawer } from './EditDrawer'
+import { ProfileForm } from '@/components/AssignmentsForm'
 
 const statuses = {
   DONE: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -24,6 +26,24 @@ const statuses = {
 function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ')
 }
+
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleString('en-CA', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  }).replace(',', '');
+}
+
+const formatDateToHHMM = (date: Date) => {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+};
 
 export default function AssignmentsList({assignments, onDelete}: {assignments: Assignment[], onDelete: (id: string) => void}) {
   return (
@@ -44,10 +64,10 @@ export default function AssignmentsList({assignments, onDelete}: {assignments: A
             </div>
             <div className="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
               <p className="whitespace-nowrap">
-                Assigné le: <time dateTime={assignment.assigned_at}>{assignment.assigned_at}</time>
+                Assigned on: <time dateTime={assignment.assigned_at}>{formatDate(assignment.assigned_at)}</time>
               </p>
                
-              {!assignment.completed_at?(<div>Not done yet</div>):(<div>Completed le: <time dateTime={assignment.completed_at}> {assignment.completed_at}</time></div>)}
+              {!assignment.completed_at?(<div>Not done yet</div>):(<div>Completed on: <time dateTime={assignment.completed_at}> {formatDate(assignment.completed_at)}</time></div>)}
               
               <p className="whitespace-nowrap">
                 
@@ -55,7 +75,11 @@ export default function AssignmentsList({assignments, onDelete}: {assignments: A
               <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
                 <circle r={1} cx={1} cy={1} />
               </svg>
-              <p className="truncate">Assigned to {`${assignment.WorkerFirstName} ${assignment.WorkerLastName}`}</p>
+              <p className="truncate">
+                Assigned to {Array.isArray(assignment.WorkersFirstName)
+                ? assignment.WorkersFirstName.join(", ")
+                : assignment.WorkersFirstName} 
+              </p>
             </div>
           </div>
           <div className="flex flex-none items-center gap-x-4 print:hidden">
@@ -94,23 +118,16 @@ export default function AssignmentsList({assignments, onDelete}: {assignments: A
               </MenuButton>
               <MenuItems
                 transition
-                className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                className="absolute right-0 z-10 mt-2 w-32 origin-top-right hover:bg-gray-300 rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
               >
-                <MenuItem>
-                  <Link
-                    href="#"
-                    className="block px-3 py-1 text-sm/6 text-gray-900 data-[focus]:bg-gray-50 data-[focus]:outline-none"
-                  >
-                    Edit<span className="sr-only">, {assignment.Titre}</span>
-                  </Link>
-                </MenuItem>
-                <MenuItem>
-                  <Link
-                    href="#"
-                    className="block px-3 py-1 text-sm/6 text-gray-900 data-[focus]:bg-gray-50 data-[focus]:outline-none"
-                  >
-                    Move<span className="sr-only">, {assignment.Titre}</span>
-                  </Link>
+                <MenuItem >
+                <EditDrawer triggerButton={
+                <Button variant="noframe">
+                Edit
+                </Button>
+                }>
+                  <ProfileForm/>
+                </EditDrawer>
                 </MenuItem>
               </MenuItems>
             </Menu>

@@ -13,3 +13,4 @@ export default async function AssignmentPage({ params }: { params: Promise<{ id:
   const activeWorker = workers.find((worker) => worker.id === session?.user.workerId);
   return <AssignmentComponent id={id} tasks={tasks} workers={workers} activeWorker={activeWorker}/>;
 }
+
