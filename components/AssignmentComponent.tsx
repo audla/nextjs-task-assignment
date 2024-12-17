@@ -5,7 +5,7 @@ import Link from "next/link";
 import TaskList from "@/components/TaskList";
 import SendMessageForm from "@/components/SendMessageForm";
 import { Task, Worker } from "@/lib/airtable";
-import  PercentDonutChart  from "./ProgressDonut";
+import PercentDonutChart from "./ProgressDonut";
 
 const fetchAssignment = async (id: string) => {
   const response = await fetch(`/api/assignments/${id}`);
@@ -61,6 +61,14 @@ export default function AssignmentComponent({
     }
   };
 
+  // Updated logic to consider "Ready" or "Completed" as complete tasks
+  const allTasksComplete = tasks.every(
+    (task) => task.status === "Ready" || task.status === "Completed"
+  );
+
+  // Dynamically set the assignment status
+  const assignmentStatus = allTasksComplete ? "DONE" : "TODO";
+
   if (isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -97,9 +105,9 @@ export default function AssignmentComponent({
               </h1>
 
               <div className="space-y-4">
-              <div className="mb-6 flex justify-center">
-                 <PercentDonutChart percent={assignment.CompletedPercent} />
-               </div>
+                <div className="mb-6 flex justify-center">
+                  <PercentDonutChart percent={assignment.CompletedPercent} />
+                </div>
                 <p className="text-gray-700">
                   <span className="font-semibold">ID:</span> {assignment.id}
                 </p>
@@ -113,14 +121,12 @@ export default function AssignmentComponent({
                   <span className="font-semibold">Status:</span>{" "}
                   <span
                     className={`font-semibold ${
-                      assignment.assignment_status === "TODO"
+                      assignmentStatus === "TODO"
                         ? "text-red-600"
-                        : assignment.assignment_status === "DONE"
-                        ? "text-green-600"
-                        : "text-gray-600"
+                        : "text-green-600"
                     }`}
                   >
-                    {assignment.assignment_status}
+                    {assignmentStatus}
                   </span>
                 </p>
               </div>

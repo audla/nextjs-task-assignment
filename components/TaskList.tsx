@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Task } from "@/lib/airtable";
 import InteractiveTask from "@/components/InteractiveTask";
+import { Slider } from "@/components/ui/slider";
 
 interface TaskListProps {
   tasks: Task[];
@@ -13,7 +14,6 @@ export default function TaskList({ tasks }: TaskListProps) {
   const [updatedTasks, setUpdatedTasks] = useState(tasks);
   const [saving, setSaving] = useState(false);
 
-  // Handle slider change
   const handleTimeWorkedChange = (taskId: string, newTimeWorked: number) => {
     setUpdatedTasks((prevTasks) =>
       prevTasks.map((task) =>
@@ -22,7 +22,6 @@ export default function TaskList({ tasks }: TaskListProps) {
     );
   };
 
-  // Handle status change
   const handleStatusChange = (taskId: string, newStatus: Task["status"]) => {
     setUpdatedTasks((prevTasks) =>
       prevTasks.map((task) =>
@@ -32,7 +31,6 @@ export default function TaskList({ tasks }: TaskListProps) {
   };
 
   const saveChanges = async () => {
-    // Check if any task has ActualWorkTime of 0
     const tasksWithZeroTime = updatedTasks.filter((task) => task.ActualWorkTime === 0);
 
     if (tasksWithZeroTime.length > 0) {
@@ -116,15 +114,11 @@ export default function TaskList({ tasks }: TaskListProps) {
 
               <div className="mb-2">
                 <p className="text-gray-600 mb-1">Time Worked:</p>
-                <input
-                  type="range"
-                  min={0}
+                <Slider
+                  defaultValue={[task.ActualWorkTime || 0]}
                   max={maxSliderValue}
-                  value={task.ActualWorkTime || 0}
-                  onChange={(e) =>
-                    handleTimeWorkedChange(task.id, parseInt(e.target.value, 10))
-                  }
-                  className="w-full"
+                  onValueChange={(value) => handleTimeWorkedChange(task.id, value[0])}
+                  ariaLabelThumb="Time Worked Slider"
                 />
                 <p className="text-gray-600 text-sm mt-1">
                   {formatTime(task.ActualWorkTime || 0)} worked
