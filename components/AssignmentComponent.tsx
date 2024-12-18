@@ -5,7 +5,7 @@ import Link from "next/link";
 import TaskList from "@/components/TaskList";
 import SendMessageForm from "@/components/SendMessageForm";
 import { Task, Worker } from "@/lib/airtable";
-import  PercentDonutChart  from "./ProgressDonut";
+import PercentDonutChart from "./ProgressDonut";
 
 const fetchAssignment = async (id: string) => {
   const response = await fetch(`/api/assignments/${id}`);
@@ -16,7 +16,17 @@ const fetchAssignment = async (id: string) => {
   return assignment;
 };
 
-export default function AssignmentComponent({ id, tasks, workers, activeWorker }: { id: string; tasks: Task[]; workers: Worker[]; activeWorker: Worker | undefined}) {
+export default function AssignmentComponent({
+  id,
+  tasks,
+  workers,
+  activeWorker,
+}: {
+  id: string;
+  tasks: Task[];
+  workers: Worker[];
+  activeWorker: Worker | undefined;
+}) {
   const queryClient = useQueryClient();
 
   const { data: assignment, isPending, isError } = useQuery({
@@ -24,6 +34,40 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
     queryFn: () => fetchAssignment(id),
     enabled: !!id,
   });
+
+  const handleTimeUpdate = async (ActualWorkTime: number) => {
+    try {
+      const response = await fetch("/api/update-time", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          assignmentId: id,
+          ActualWorkTime,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        alert("Time worked updated successfully!");
+        queryClient.invalidateQueries({ queryKey: ["assignment", id] });
+      } else {
+        alert("Failed to update time worked.");
+      }
+    } catch (error) {
+      console.error("Error updating time worked:", error);
+      alert("An error occurred while updating time worked.");
+    }
+  };
+
+  // Updated logic to consider "Ready" or "Completed" as complete tasks
+  const allTasksComplete = tasks.every(
+    (task) => task.status === "Ready" || task.status === "Completed"
+  );
+
+  // Dynamically set the assignment status
+  const assignmentStatus = allTasksComplete ? "DONE" : "TODO";
 
   if (isPending) {
     return (
@@ -56,12 +100,14 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="p-6 sm:p-8 md:p-10 grid gap-8 md:grid-cols-2">
             <div>
-              <h1 className="text-gray-800 text-3xl sm:text-4xl font-bold mb-6 print:text-black">Assignment Details</h1>
+              <h1 className="text-gray-800 text-3xl sm:text-4xl font-bold mb-6 print:text-black">
+                Assignment Details
+              </h1>
 
               <div className="space-y-4">
-              <div className="mb-6 flex justify-center">
-                 <PercentDonutChart percent={assignment.CompletedPercent} />
-               </div>
+                <div className="mb-6 flex justify-center">
+                  <PercentDonutChart percent={assignment.CompletedPercent} />
+                </div>
                 <p className="text-gray-700">
                   <span className="font-semibold">ID:</span> {assignment.id}
                 </p>
@@ -75,14 +121,12 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
                   <span className="font-semibold">Status:</span>{" "}
                   <span
                     className={`font-semibold ${
-                      assignment.assignment_status === "TODO"
+                      assignmentStatus === "TODO"
                         ? "text-red-600"
-                        : assignment.assignment_status === "DONE"
-                        ? "text-green-600"
-                        : "text-gray-600"
+                        : "text-green-600"
                     }`}
                   >
-                    {assignment.assignment_status}
+                    {assignmentStatus}
                   </span>
                 </p>
               </div>
@@ -95,8 +139,6 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
                   <TaskList tasks={tasks} assignmentId={id} />
                 </div>
               )}
-
-              
             </div>
             <div>
               <SendMessageForm
@@ -104,7 +146,9 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
                 workers={workers}
                 selectedWorker={activeWorker}
                 messagesIds={assignment.Messages}
-                onInvalidate={() => queryClient.invalidateQueries({ queryKey: ["assignment", id] })}
+                onInvalidate={() =>
+                  queryClient.invalidateQueries({ queryKey: ["assignment", id] })
+                }
               />
             </div>
           </div>
@@ -113,4 +157,3 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
     </div>
   );
 }
-

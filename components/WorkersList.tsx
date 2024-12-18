@@ -27,6 +27,7 @@ function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ')
 }
 
+
 function formatDate(dateString: string) {
   const date = new Date(dateString);
   return date.toLocaleString('en-CA', {
@@ -38,12 +39,6 @@ function formatDate(dateString: string) {
     hour12: false
   }).replace(',', '');
 }
-
-const formatDateToHHMM = (date: Date) => {
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-};
 
 export default function AssignmentsList({assignments, onDelete}: {assignments: Assignment[], onDelete: (id: string) => void}) {
   return (
@@ -137,4 +132,3 @@ export default function AssignmentsList({assignments, onDelete}: {assignments: A
     </ul>
   )
 }
-

@@ -85,6 +85,7 @@ export type Task = {
     description: string;
     due_date: string;  
     estimated_hours: number;
+    ActualWorkTime: number;
 };
 
 // TODO: utiliser ceci pour l'api /api/tasks
