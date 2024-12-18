@@ -16,6 +16,8 @@ import {
 } from '@/components/ui/alert-dialog'
 import { EditDrawer } from './EditDrawer'
 import { ProfileForm } from '@/components/AssignmentsForm'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@radix-ui/react-select'
+import { Worker } from '@/lib/airtable'
 
 const statuses = {
   DONE: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -26,6 +28,7 @@ const statuses = {
 function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ')
 }
+
 
 function formatDate(dateString: string) {
   const date = new Date(dateString);
@@ -38,12 +41,6 @@ function formatDate(dateString: string) {
     hour12: false
   }).replace(',', '');
 }
-
-const formatDateToHHMM = (date: Date) => {
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-};
 
 export default function AssignmentsList({assignments, onDelete}: {assignments: Assignment[], onDelete: (id: string) => void}) {
   return (
@@ -118,15 +115,15 @@ export default function AssignmentsList({assignments, onDelete}: {assignments: A
               </MenuButton>
               <MenuItems
                 transition
-                className="absolute right-0 z-10 mt-2 w-32 origin-top-right hover:bg-gray-300 rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-gray-900/5 focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
               >
                 <MenuItem >
                 <EditDrawer triggerButton={
-                <Button variant="noframe">
+                <Button variant="noframe" className="w-full text-left px-4 py-4 hover:bg-gray-100">
                 Edit
                 </Button>
                 }>
-                  <ProfileForm/>
+                  <ProfileForm activeWorker={WorkerSelect}/>
                 </EditDrawer>
                 </MenuItem>
               </MenuItems>
@@ -138,3 +135,31 @@ export default function AssignmentsList({assignments, onDelete}: {assignments: A
   )
 }
 
+export function WorkerSelect({
+  workers,
+  setActiveWorker,
+}: {
+  workers: Worker[];
+  setActiveWorker: (workers: Worker | undefined) => void;
+}) {
+  // When a new value is selected from the dropdown
+  const handleWorkerChange = (value: string) => {
+    // Find the worker object that matches the selected value (worker_id)
+    const selectedWorker = workers.find((worker) => worker.worker_id === value) || undefined;
+    setActiveWorker(selectedWorker); // Set the selected worker in the parent component
+  };
+  return (
+    <Select onValueChange={handleWorkerChange}>
+      <SelectTrigger className="w-40">
+        <SelectValue placeholder="Select a worker" />
+      </SelectTrigger>
+      <SelectContent>
+        {workers.map((worker) => (
+          <SelectItem key={worker.id} value={worker.worker_id}>
+            {worker.worker_id}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}

@@ -53,6 +53,7 @@ export function EditDrawer({ children, triggerButton }: EditDrawerProps) {
           {TriggerButton}
         </DrawerTrigger>
         <DrawerContent>
+
           <div className="px-4 py-4">
             {children}
           </div>
@@ -71,12 +72,18 @@ export function EditDrawer({ children, triggerButton }: EditDrawerProps) {
       <SheetTrigger asChild>
         {TriggerButton}
       </SheetTrigger>
-      <SheetContent side="right">
+      
+      <SheetContent side="right" >
+        <SheetHeader>
+        <SheetTitle>
+          This is my title
+        </SheetTitle> 
+        </SheetHeader>
         <div className="mt-6">
           {children}
         </div>
         <SheetFooter className="mt-6">
-          <SheetClose asChild>
+        <SheetClose asChild>
             <Button variant="outline">Cancel</Button>
           </SheetClose>
         </SheetFooter>
