@@ -13,11 +13,15 @@ const ses = new SESClient({
 
 export async function POST(req: Request): Promise<Response> {
   try {
-    const { recipientEmail, senderName, assignmentTitle, message } = await req.json();
+    const { recipients, sender, assignmentTitle, message } = await req.json();
+
+if (!sender?.firstName && !sender?.lastName && !sender?.email) {
+  throw new Error("invalid, il manque des information du sender")
+}
 
     const emailHtml = await render(
       <MessageNotification 
-        senderName={senderName} 
+        senderName={sender.firstName} 
         assignmentTitle={assignmentTitle} 
         message={message} 
       />
@@ -29,10 +33,16 @@ export async function POST(req: Request): Promise<Response> {
         aws: { SendRawEmailCommand }
       }
     });
+ const mailinglist: Array<string>= []
+recipients.forEach((worker:{email: string}) => {
+  if (worker && worker?.email[0] ){
+    mailinglist.push(worker.email[0])
+  }
+});
 
     const mailOptions = {
       from: 'no-reply@audla.ca',
-      to: recipientEmail,
+      to: mailinglist,
       subject: `New Message Regarding: ${assignmentTitle}`,
       html: emailHtml,
     };

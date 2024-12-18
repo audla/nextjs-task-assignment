@@ -5,19 +5,28 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import WorkerSelectionComponent from "@/components/WorkerComponentSelection";
-import {  Worker } from "@/lib/airtable";
+import {  Assignment, Worker } from "@/lib/airtable";
 import { ChatScrollArea } from "./chat-scroll-area";
 import { getErrorMessage } from "@/lib/utils";
+type SendMessageType = {
+  assignment: Assignment; // Change [string] to string[]
+  sender: { firstName: string; lastName: string; email: string };
+  recipients: Array<{ firstName: string; lastName: string; email: string }|undefined>;
+  content: string;
+  workerId: string;
+  assignmentId: string;
+};
+
 
 const sendMessage = async ({
   content,
   workerId,
   assignmentId,
-}: {
-  content: string;
-  workerId: string;
-  assignmentId: string;
-}) => {
+  assignment,
+  sender,
+  recipients,
+
+}: SendMessageType) => {
   const response = await fetch(`/api/messages`, {
     method: "POST",
     headers: {
@@ -29,7 +38,21 @@ const sendMessage = async ({
   if (!response.ok) {
     throw new Error("Failed to send the message.");
   }
-};
+    
+    const responseEmail = await fetch(`/api/send-message-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({recipients, sender, assignmentTitle:assignment.Titre, 
+        message:`Vous avez recu un nouveau message de ${sender.email}!`}),
+    });
+
+    console.log (responseEmail)
+
+  }
+
 
 const fetchMessages = async (ids: string[]) => {
   const idsParam = ids.join(",");
@@ -41,13 +64,13 @@ const fetchMessages = async (ids: string[]) => {
 };
 
 export default function SendMessageForm({
-  assignmentId,
+  assignment,
   workers,
   messagesIds,
   onInvalidate,
   selectedWorker,
 }: {
-  assignmentId: string;
+  assignment: Assignment;
   workers: Worker[];
   messagesIds: string[];
   onInvalidate: () => void;
@@ -77,13 +100,31 @@ export default function SendMessageForm({
 
   const handleSend = () => {
     if (!message.trim() || !selectedWorker) return;
+  
+    const sender = { 
+      firstName:  selectedWorker.first_name, 
+      lastName:   selectedWorker.last_name, 
+      email:   selectedWorker.email 
+    };
+
+    const recipients = workers.map((worker)=> (worker.id != selectedWorker.id ?{
+      firstName: worker.first_name, 
+      lastName: worker.last_name, 
+      email: worker.email
+    }:undefined)) 
 
     mutation.mutate({
       content: message,
       workerId: selectedWorker.id,
-      assignmentId,
+      assignmentId: assignment.id,
+      assignment,
+      sender,
+      recipients,
     });
   };
+  
+  
+  
 
   return (
     <div className="bg-gray-50 rounded-lg shadow-md p-4 sm:p-6">

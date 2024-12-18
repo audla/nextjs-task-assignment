@@ -96,7 +96,7 @@ export default function AssignmentComponent({ id, tasks, workers, activeWorker }
             </div>
             <div>
               <SendMessageForm
-                assignmentId={assignment.id}
+                assignment={assignment}
                 workers={workers}
                 selectedWorker={activeWorker}
                 messagesIds={assignment.Messages}
