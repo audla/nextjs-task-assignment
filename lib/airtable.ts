@@ -77,7 +77,7 @@ type GetAllTasksParams ={
 
 export type Task = {
     id: string;
-    status: "Not ready" | "In progress" | "Completed";  // adjust as needed
+    status: "Not Started" | "Not Ready" | "Ready";  // adjust as needed
     priority: "Not that important" | "Important" | "Very important";  // adjust as needed
     created_at: string;
     AssignmentID: string[];
@@ -177,9 +177,10 @@ export type Assignment = {
     assigned_at: string;
     completed_at: string;
     Messages: string[];
-    WorkerFirstName: string;
+    WorkersFirstName: string;
     WorkerLastName: string;
     CompletedPercent: string;
+    TotalTimeWorked: string;
 };
 
 export const getAllAssignments = async ({ filterByFormula = undefined }: GetAllAssignmentsParams): Promise<Assignment[]> => {
