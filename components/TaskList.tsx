@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import InteractiveTask from "@/components/InteractiveTask";
-import { Task } from "@/lib/airtable";
 import { toast } from "@/hooks/use-toast";
+import { Task } from "@/lib/airtable";
+import InteractiveTask from "@/components/InteractiveTask";
+import { Slider } from "@/components/ui/slider";
 import { useQueryClient } from "@tanstack/react-query";
+
 
 interface TaskListProps {
   tasks: Task[];
@@ -16,16 +18,37 @@ export default function TaskList({ tasks, assignmentId }: TaskListProps) {
   const [saving, setSaving] = useState(false);
   const queryClient = useQueryClient(); // Initialize Query Client
 
+  const handleTimeWorkedChange = (taskId: string, newTimeWorked: number) => {
+    setUpdatedTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, ActualWorkTime: newTimeWorked } : task
+      )
+    );
+  };
+
   const handleStatusChange = (taskId: string, newStatus: Task["status"]) => {
     setUpdatedTasks((prevTasks) =>
-      prevTasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task))
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, status: newStatus } : task
+      )
     );
   };
 
   const saveChanges = async () => {
+    const tasksWithZeroTime = updatedTasks.filter((task) => task.ActualWorkTime === 0);
+
+    if (tasksWithZeroTime.length > 0) {
+      toast({
+        title: "Time Worked Missing",
+        description: "Please enter the amount of time worked on all tasks before saving.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSaving(true);
     try {
-      const response = await fetch("/api/tasks", {
+      const response = await fetch("/api/save-time-worked", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,7 +62,7 @@ export default function TaskList({ tasks, assignmentId }: TaskListProps) {
        queryClient.invalidateQueries({ queryKey: ["assignment", assignmentId] });
       toast({
         title: "Changes saved successfully!",
-        description: "Nous avons enregistré les modifications.",
+        description: "Time worked has been updated.",
       });
     } catch (error) {
       console.error("Error saving tasks:", error);
@@ -53,8 +76,16 @@ export default function TaskList({ tasks, assignmentId }: TaskListProps) {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours}h ${minutes}m`;
+  };
+
+  const getMaxSliderValue = (currentValue: number) => {
+    const baseMax = 8 * 3600; // 8 hours in seconds
+    const dynamicMax = Math.max(baseMax, currentValue * 2);
+    return Math.min(dynamicMax, 24 * 3600); // Cap at 24 hours
   };
 
   if (tasks.length === 0) {
@@ -64,46 +95,50 @@ export default function TaskList({ tasks, assignmentId }: TaskListProps) {
   return (
     <div className="bg-gray-50 rounded-lg shadow-md p-6">
       <ul className="space-y-6">
-        {tasks.map((task, index) => (
-          <li key={task.id} className="bg-white rounded-lg shadow p-4 transition-shadow hover:shadow-lg">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              Task {index + 1}: {task.title}
-            </h3>
-            <p className="text-gray-600 mb-2">
-              Priority:{" "}
-              <span
-                className={`font-medium ${
-                  task.priority === "Not that important"
-                    ? "text-green-600"
-                    : task.priority === "Important"
-                    ? "text-orange-600"
-                    : task.priority === "Very important"
-                    ? "text-red-600"
-                    : "text-gray-600"
-                }`}
-              >
-                {task.priority}
-              </span>
-            </p>
-            <div className="mb-2">
-              <p className="text-gray-600 mb-1">Status:</p>
-              <InteractiveTask
-                taskId={task.id}
-                currentStatus={task.status}
-                onStatusChange={handleStatusChange}
-              />
-            </div>
-            <p className="text-gray-600 mb-2">
-              <span className="font-medium">Description:</span> {task.description}
-            </p>
-            <p className="text-gray-500 text-sm">
-              <span className="font-medium">Created at:</span> {new Date(task.created_at).toLocaleString()}
-            </p>
-          </li>
-        ))}
+        {updatedTasks.map((task) => {
+          const maxSliderValue = getMaxSliderValue(task.ActualWorkTime || 0);
+          return (
+            <li
+              key={task.id}
+              className="bg-white rounded-lg shadow p-4 transition-shadow hover:shadow-lg"
+            >
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                {task.title}
+              </h3>
+
+              <p className="text-gray-600 mb-2">Priority: {task.priority}</p>
+
+              <div className="mb-2">
+                <p className="text-gray-600 mb-1">Status:</p>
+                <InteractiveTask
+                  taskId={task.id}
+                  currentStatus={task.status}
+                  onStatusChange={handleStatusChange}
+                />
+              </div>
+
+              <div className="mb-2">
+                <p className="text-gray-600 mb-1">Time Worked:</p>
+                <Slider
+                  defaultValue={[task.ActualWorkTime || 0]}
+                  max={maxSliderValue}
+                  onValueChange={(value) => handleTimeWorkedChange(task.id, value[0])}
+                  ariaLabelThumb="Time Worked Slider"
+                />
+                <p className="text-gray-600 text-sm mt-1">
+                  {formatTime(task.ActualWorkTime || 0)} worked
+                </p>
+              </div>
+
+              <p className="text-gray-600 mb-2">
+                <span className="font-medium">Description:</span> {task.description}
+              </p>
+            </li>
+          );
+        })}
       </ul>
 
-      <div className="mt-8 space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-start print:hidden">
+      <div className="mt-8 space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-start">
         <button
           onClick={saveChanges}
           className={`w-full sm:w-auto px-6 py-3 rounded-lg text-white font-semibold transition-colors duration-200 ${
@@ -115,22 +150,7 @@ export default function TaskList({ tasks, assignmentId }: TaskListProps) {
         >
           {saving ? "Saving..." : "Save Changes"}
         </button>
-        <button
-          onClick={handlePrint}
-          className="w-full sm:w-auto px-6 py-3 rounded-lg text-white font-semibold bg-gray-500 hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50"
-        >
-          Print
-        </button>
       </div>
-
-      <style jsx>{`
-        @media print {
-          .print\\:hidden {
-            display: none !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
-
