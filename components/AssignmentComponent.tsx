@@ -136,7 +136,7 @@ export default function AssignmentComponent({
                   <p className="text-gray-700 mb-4">
                     <span className="font-semibold">Number of Tasks:</span> {tasks?.length}
                   </p>
-                  <TaskList tasks={tasks} />
+                  <TaskList tasks={tasks} assignmentId={id} />
                 </div>
               )}
             </div>

@@ -5,14 +5,18 @@ import { toast } from "@/hooks/use-toast";
 import { Task } from "@/lib/airtable";
 import InteractiveTask from "@/components/InteractiveTask";
 import { Slider } from "@/components/ui/slider";
+import { useQueryClient } from "@tanstack/react-query";
+
 
 interface TaskListProps {
   tasks: Task[];
+  assignmentId: string;
 }
 
-export default function TaskList({ tasks }: TaskListProps) {
+export default function TaskList({ tasks, assignmentId }: TaskListProps) {
   const [updatedTasks, setUpdatedTasks] = useState(tasks);
   const [saving, setSaving] = useState(false);
+  const queryClient = useQueryClient(); // Initialize Query Client
 
   const handleTimeWorkedChange = (taskId: string, newTimeWorked: number) => {
     setUpdatedTasks((prevTasks) =>
@@ -55,6 +59,7 @@ export default function TaskList({ tasks }: TaskListProps) {
       if (!response.ok) {
         throw new Error("Failed to save tasks to Airtable");
       }
+       queryClient.invalidateQueries({ queryKey: ["assignment", assignmentId] });
       toast({
         title: "Changes saved successfully!",
         description: "Time worked has been updated.",
